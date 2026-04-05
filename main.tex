@@ -234,36 +234,39 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile,t]{What APEX reports}
+\begin{frame}[fragile,t]{What Dyablo and APEX reports}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize Dyablo and APEX screen output (truncated)}}
-\begin{lstlisting}[style=terminal,basicstyle=\ttfamily\scriptsize\color{termText}]
-APEX Version: -bd4b707-fix/cuda-nvml-gpu-timers
-KOKKOS CONFIG
-  Kokkos Version: 5.0.0
-  Default Device: Cuda
-  GPU architecture: ADA89
+\texttt{\scriptsize Dyablo and APEX screen output (heavily truncated)}}
+{\ttfamily\tiny\color{termText}
+\begin{semiverbatim}
+\textcolor{hotspotBlue}{APEX Version: -bd4b707-fix/cuda-nvml-gpu-timers}
+\textcolor{hotspotBlue}{KOKKOS CONFIG}
+\textcolor{hotspotBlue}{  Kokkos Version: 5.0.0}
+\textcolor{hotspotBlue}{  Default Device: Cuda}
+\textcolor{hotspotBlue}{  GPU architecture: ADA89}
 ----------------------------------------
-Total               CPU 49.526 s | GPU 49.525 s
-| TimeLoop          CPU 46.971 s | GPU 46.971 s
-| | Hyperbolic...   CPU 18.651 s | GPU 18.651 s
-| | AMR             CPU  5.701 s | GPU  5.700 s
+\textcolor{hlOrange}{Total               CPU 49.526 s | GPU 49.525 s}
+\textcolor{hlOrange}{| TimeLoop          CPU 46.971 s | GPU 46.971 s}
+\textcolor{hlOrange}{| | Hyperbolic...   CPU 18.651 s | GPU 18.651 s}
+\textcolor{hlOrange}{| | AMR             CPU  5.701 s | GPU  5.700 s}
 ----------------------------------------
-Counter                         : #samp | mean | max
-GPU: [NVML] Memory Used (GB)    :    49   1.44   1.45
-GPU: [NVML] Utilization (%)     :    44   2.95  10.00
+\textcolor{hotspotBlue}{Counter                         : #samp | mean | max}
+\textcolor{hotspotBlue}{GPU: [NVML] Memory Used (GB)    :    49   1.44   1.45}
+\textcolor{hotspotBlue}{GPU: [NVML] Utilization (%)     :    44   2.95  10.00}
 ----------------------------------------
-CPU Timers                      : #calls| mean | total
-cudaDeviceSynchronize           : 78268   0.00    8.32
-cudaSetDevice                   :114245   0.00    7.68
-\end{lstlisting}
+\textcolor{hotspotBlue}{CPU Timers                      : #calls| mean | total}
+\textcolor{hotspotBlue}{cudaDeviceSynchronize           : 78268   0.00    8.32}
+\textcolor{hotspotBlue}{cudaSetDevice                   :114245   0.00    7.68}
+\end{semiverbatim}}
 \end{beamerboxesrounded}
+\vspace{0.2em}
+{\scriptsize \textcolor{hlOrange}{Dyablo} timer hierarchy exported through regions. \textcolor{hotspotBlue}{APEX} runtime banner, NVML counters, and CPU timer summary.}
 \end{frame}
 
-\begin{frame}[fragile,t]{Observations on Dyablo}
+\begin{frame}[fragile,t]{APEX sees Dyablo's timer hierarchy}
 \small
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
@@ -302,7 +305,7 @@ Total                     time (CPU) :    49.526 s (100.00%) , (GPU) :    49.525
 {\scriptsize In this presentation, hotspots are highlighted in \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\textcolor{hlOrange}{orange}}}.}
 \end{frame}
 
-\begin{frame}[fragile,t]{Observations on Dyablo}
+\begin{frame}[fragile,t]{APEX observations on Dyablo run}
 \small
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
