@@ -435,7 +435,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 One context = one tunable kernel signature.
 
 \vspace{0.08em}
-Here it is identified by \texttt{kernel name}, \texttt{kernel type}, and the current exported \texttt{region} in the APEX \texttt{tree node}.
+Here it is identified by \texttt{kernel name}, \texttt{kernel type}, and the current APEX \texttt{tree\_node}.
 \end{beamerboxesrounded}
 
 \vspace{0.28em}
@@ -465,7 +465,7 @@ do not reuse from YAML, a later run retunes that context
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile,t]{One Dyablo kernel tune by APEX}
+\begin{frame}[fragile,t]{One Dyablo kernel tuned by APEX (before intrusive split)}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
@@ -563,7 +563,7 @@ Context_2:
     \item Both outputs use the same \textcolor{hotspotBlue}{\texttt{[lower: 0, upper: 0.999, step: 0.04995]}} declaration because APEX stores normalized search axes, not final Kokkos sizes.
     \item The YAML records that this kernel has two tuning knobs, \textcolor{green!70!black}{\texttt{vector\_length}} and \textcolor{green!70!black}{\texttt{team\_size}}, and one tuning context.
     \item The cache is not settled yet, the context still ends with \textcolor{hlOrange}{\texttt{Converged: false.}}
-    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{So the next Dyablo run cannot yet reload one final winning configuration from this YAML. The next run will replay candidates already seen in the previous one.}}}
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{So the next Dyablo run cannot yet reload one final winning configuration from this YAML. This context will be tuned again, without resuming a partial search state from the cache.}}}
 \end{itemize}
 \end{frame}
 
@@ -579,7 +579,7 @@ Context_2:
 \begin{itemize}\itemsep0.18em
     \item \texttt{kernel\_name}
     \item \texttt{kernel\_type}
-    \item exported \texttt{tree\_node}
+    \item current APEX \texttt{tree\_node}
 \end{itemize}
 \end{beamerboxesrounded}
 
@@ -600,7 +600,7 @@ Context_2:
     \item Two calls to \texttt{list\_send\_cells} with different \texttt{ghostmap.send\_iOcts.size()} still hit the same APEX context.
     \item Best \textcolor{green!70!black}{\texttt{team\_size}} and \textcolor{green!70!black}{\texttt{vector\_length}} can change with size, backend, GPU, and workload.
     \item One YAML entry can therefore mix several regimes and end up as a compromise.
-    \item If one run stops with \texttt{Converged: false}, the next run does not resume that unfinished search, it repeats part of the same exploration.
+    \item If one run stops with \texttt{Converged: false}, the next run does not resume that unfinished search, it starts tuning that context again and may revisit similar candidates.
     \item With short runs, this context may keep getting retuned without ever settling on one stable setting.
 \end{itemize}
 \end{beamerboxesrounded}
