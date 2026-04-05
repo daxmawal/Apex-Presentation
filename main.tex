@@ -613,34 +613,37 @@ Context_0:
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile,t]{One kernel, different workload sizes}
+\begin{frame}[fragile,t]{One kernel, different workloads, same APEX context}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize core/src/mpi/GhostCommunicator\_partial\_blocks.cpp}}
+\texttt{\scriptsize core/src/hyperbolic/scheme/Hyperbolic\_euler.h}}
 \begin{lstlisting}[language=C++,basicstyle=\ttfamily\tiny\color{termText},keywordstyle=\color{termText},stringstyle=\color{termText},commentstyle=\color{termText},identifierstyle=\color{termText},backgroundcolor=\color{termBg},numbers=none,frame=none,showstringspaces=false,columns=fullflexible,escapeinside={(*@}{@*)}]
-Kokkos::parallel_for("GhostCommunicator_partial_blocks::list_send_cells",
-  Kokkos::TeamPolicy<>((*@{\textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.22pt}{\color{red!85!black}\bfseries\ttfamily\tiny \detokenize{ghostmap.send_iOcts.size()}}}@*), Kokkos::AUTO, Kokkos::AUTO),
-  KOKKOS_LAMBDA(const Kokkos::TeamPolicy<>::member_type& team)
-{
-  uint32_t iOct = team.league_rank();
-  GhostMap_t::CellMask facemask = ghostmap.send_cell_masks(iOct);
-  uint32_t iCell_begin = offset_iOct(iOct);
-  uint32_t current_send_iOct = ghostmap.send_iOcts(iOct);
+(*@{\color{green!70!black}\ttfamily\tiny \detokenize{Kokkos::parallel_for(}}@*)(*@{\color{green!70!black}\ttfamily\tiny \detokenize{"HydroE::Patch"}}@*),
+  TeamPolicy((*@{\color{red!80!black}\bfseries\ttfamily\tiny \detokenize{nbOcts}}@*), Kokkos::AUTO(), Kokkos::AUTO())
+    .set_scratch_size(...),
+  KOKKOS_LAMBDA(member_type team) {
 
-  Kokkos::parallel_for(Kokkos::TeamVectorRange(team, facemask_count(facemask)),
-    [&](uint32_t i) {
-      send_iOct(iCell_begin + i) = current_send_iOct;
-      send_iCell(iCell_begin + i) = facemask_iCells(facemask, i);
+    Patch patch(..., team);
+    auto Qpatch = patch.allocate_tmp(...);
+
+    patch.foreach_cell("HydroE::QPatch"), Qpatch, [&](CellIndex i) {
+      // conservative -> primitive
     });
-});
+
+    patch.foreach_cell("HydroE::Flux"), Uout.getShape(), [&](CellIndex i) {
+      // slopes + reconstruction + Riemann solver
+      // atomic_add on Uout
+    });
+  });
 \end{lstlisting}
 \end{beamerboxesrounded}
 \vspace{0.1em}
 {\scriptsize
-If \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.12pt}{\textcolor{red!80!black}{\texttt{ghostmap.send\_iOcts.size()}}} varies a lot, the kernel workload changes too, but APEX still treats these launches as one context and compares candidate configurations across them.}
+If \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.12pt}{\textcolor{red!80!black}{\textbf{\texttt{nbOcts}}}} varies a lot, the kernel workload changes too, but APEX still treats these launches as one context and compares candidate configurations across them because the APEX tree node, the Kokkos kernel type \textcolor{green!70!black}{\texttt{Kokkos::parallel\_for}}, and the Kokkos kernel name \textcolor{green!70!black}{\texttt{HydroE::Patch}} are part of the context key, but \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.12pt}{\textcolor{red!80!black}{\textbf{\texttt{nbOcts}}}} is not.}
 \end{frame}
+
 
 % =========================================================
 \section{4. APEX intrusive auto-tuning}
