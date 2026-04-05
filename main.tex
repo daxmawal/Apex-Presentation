@@ -173,7 +173,6 @@
     \end{itemize}
     \item Integration branch: \href{https://github.com/daxmawal/Dyablo-apex/tree/apex}{\texttt{daxmawal/Dyablo-apex}, branch \texttt{apex}}.
     \item All Dyablo examples in this presentation are run with \texttt{test\_blast\_2D\_block.ini}.
-    \item \todo{Use a larger test case than \texttt{test\_blast\_2D\_block.ini}.}
 \end{itemize}
 \end{frame}
 
@@ -263,7 +262,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 ----------------------------------------
 \textcolor{hotspotBlue}{CPU Timers                                           : #calls|   mean |   total}
 \textcolor{hotspotBlue}{               Kokkos region, HyperbolicUpdate_euler :    418     0.20    81.92}
-\textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{patchBlue}{    Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch :    418     0.19    }}\textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.20pt}{\textcolor{red!80!black}{\textbf{79.84}}}
+    \fcolorbox{patchBlue}{termBg}{\strut\textcolor{patchBlue}{Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch :   418     0.19 }\textcolor{patchBlue}{   79.84}}
 \textcolor{hotspotBlue}{     Kokkos::parallel_for [Cuda, Dev:0] HydroE::Init :    418     0.00     0.29}
 \end{semiverbatim}}
 \end{beamerboxesrounded}
@@ -280,27 +279,27 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \texttt{\scriptsize Dyablo's timer hierarchy exported through Kokkos regions}}
 {\ttfamily\tiny\color{termText}
 \begin{semiverbatim}
-Total                     time (CPU) :    49.526 s (100.00%) , (GPU) :    49.525 s (100.00%)
-| Init                      time (CPU) :     2.287 s (  4.62%) , (GPU) :     2.287 s (  4.62%)
-| | initial_conditions        time (CPU) :     2.286 s (  4.62%) , (GPU) :     2.286 s (  4.62%)
-| | other                     time (CPU) :     0.001 s (  0.00%) , (GPU) :     0.001 s (  0.00%)
-| TimeLoop                  time (CPU) :    46.971 s ( 94.84%) , (GPU) :    46.971 s ( 94.84%)
-\textcolor{hlOrange}{| | AMR                       time (CPU) :     5.701 s ( 11.51%) , (GPU) :     5.700 s ( 11.51%)}
-| | | AMR: Mark cells           time (CPU) :     0.006 s (  0.01%) , (GPU) :     0.005 s (  0.01%)
-\textcolor{hlOrange!70!white}{| | | AMR: adapt                time (CPU) :     2.419 s (  4.88%) , (GPU) :     2.419 s (  4.88%)}
-\textcolor{hlOrange!70!white}{| | | AMR: remap userdata       time (CPU) :     3.096 s (  6.25%) , (GPU) :     3.096 s (  6.25%)}
-| | | MPI ghosts                time (CPU) :     0.003 s (  0.01%) , (GPU) :     0.003 s (  0.01%)
-| | | other                     time (CPU) :     0.178 s (  0.36%) , (GPU) :     0.177 s (  0.36%)
-| | AMR: load-balance         time (CPU) :     0.351 s (  0.71%) , (GPU) :     0.351 s (  0.71%)
-\textcolor{hlOrange}{| | Hyperbolic_hancock        time (CPU) :    18.651 s ( 37.66%) , (GPU) :    18.651 s ( 37.66%)}
-| | MPI ghosts                time (CPU) :     1.382 s (  2.79%) , (GPU) :     1.382 s (  2.79%)
-| | checkpoint                time (CPU) :     0.001 s (  0.00%) , (GPU) :     0.011 s (  0.02%)
-\textcolor{hlOrange}{| | dt                        time (CPU) :     1.934 s (  3.90%) , (GPU) :     1.934 s (  3.91%)}
-| | outputs                   time (CPU) :     0.739 s (  1.49%) , (GPU) :     0.737 s (  1.49%)
-\textcolor{hlOrange}{| | other                     time (CPU) :    18.213 s ( 36.77%) , (GPU) :    18.204 s ( 36.76%)}
-| checkpoint                time (CPU) :     0.089 s (  0.18%) , (GPU) :     0.089 s (  0.18%)
-| outputs                   time (CPU) :     0.179 s (  0.36%) , (GPU) :     0.179 s (  0.36%)
-| other                     time (CPU) :     0.000 s (  0.00%) , (GPU) :     0.000 s (  0.00%)
+Total                           time (CPU) :   346.719 s (100.00%) , (GPU) :   346.713 s (100.00%)
+| Init                          time (CPU) :     1.174 s (  0.34%) , (GPU) :     1.174 s (  0.34%)
+| | initial_conditions          time (CPU) :     1.173 s (  0.34%) , (GPU) :     1.173 s (  0.34%)
+| | other                       time (CPU) :     0.000 s (  0.00%) , (GPU) :     0.000 s (  0.00%)
+| TimeLoop                      time (CPU) :   343.129 s ( 98.96%) , (GPU) :   343.123 s ( 98.96%)
+\textcolor{hlOrange}{| | AMR                         time (CPU) :   207.811 s ( 59.94%) , (GPU) :   207.808 s ( 59.94%)}
+\textcolor{hlOrange!70!white}{| | | AMR: Mark cells           time (CPU) :    59.920 s ( 17.28%) , (GPU) :    59.921 s ( 17.28%)}
+\textcolor{hlOrange!70!white}{| | | AMR: adapt                time (CPU) :    43.533 s ( 12.56%) , (GPU) :    43.628 s ( 12.58%)}
+\textcolor{hlOrange!70!white}{| | | AMR: remap userdata       time (CPU) :    99.926 s ( 28.82%) , (GPU) :   100.056 s ( 28.86%)}
+| | | MPI ghosts                time (CPU) :     0.086 s (  0.02%) , (GPU) :     0.086 s (  0.02%)
+| | | other                     time (CPU) :     4.346 s (  1.25%) , (GPU) :     4.117 s (  1.19%)
+| | AMR: load-balance           time (CPU) :     2.001 s (  0.58%) , (GPU) :     2.002 s (  0.58%)
+\textcolor{hlOrange}{| | HyperbolicUpdate_euler      time (CPU) :    81.917 s ( 23.63%) , (GPU) :    81.916 s ( 23.63%)}
+| | MPI ghosts                  time (CPU) :     0.622 s (  0.18%) , (GPU) :     0.621 s (  0.18%)
+| | checkpoint                  time (CPU) :     0.306 s (  0.09%) , (GPU) :     0.307 s (  0.09%)
+\textcolor{hlOrange}{| | dt                          time (CPU) :    18.296 s (  5.28%) , (GPU) :    18.577 s (  5.36%)}
+| | outputs                     time (CPU) :     0.349 s (  0.10%) , (GPU) :     0.348 s (  0.10%)
+\textcolor{hlOrange}{| | other                       time (CPU) :    31.826 s (  9.18%) , (GPU) :    31.544 s (  9.10%)}
+| checkpoint                    time (CPU) :     0.946 s (  0.27%) , (GPU) :     0.946 s (  0.27%)
+| outputs                       time (CPU) :     1.470 s (  0.42%) , (GPU) :     1.470 s (  0.42%)
+| other                         time (CPU) :     0.000 s (  0.00%) , (GPU) :     0.000 s (  0.00%)
 \end{semiverbatim}}
 \end{beamerboxesrounded}
 \vspace{0.2em}
@@ -317,28 +316,26 @@ Total                     time (CPU) :    49.526 s (100.00%) , (GPU) :    49.525
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
 \texttt{\scriptsize Same run: Counter + CPU Timers excerpt}}
-\begin{lstlisting}[style=terminal,basicstyle=\ttfamily\scriptsize\color{termText}]
+\begin{lstlisting}[style=terminal,basicstyle=\ttfamily\tiny\color{termText}]
 ----------------------------------------
-Counter                         : #samp | mean | max
-GPU mem. used (GB)              :    44  1.44  1.45
-GPU util. (%)                   :    44  2.95 10.00
-GPU mem util. (%)               :    44  0.43  2.00
-GPU power (W)                   :    44 21.12 21.78
+Counter                                              :  #samp |   mean  |  max
+                                          CPU Idle % :    342    87.82    90.62
+                                          CPU User % :    342    10.55    21.07
+                                      status:Threads :    343    38.00    38.00
+                                     status:VmRSS kB :    343 1.76e+05 1.81e+05
 ----------------------------------------
-CPU Timers                      : #calls| mean | total
-Kokkos region, Hyperbolic...    :    74  0.25 18.65
-Kokkos::parallel_for add_cells  : 28992  0.00 15.23
-cudaDeviceSynchronize           : 78268  0.00  8.32
-cudaSetDevice                   :114245  0.00  7.68
-cudaFree                        :  4144  0.00  6.30
-Kokkos region, AMR              :    14  0.41  5.70
-cudaMalloc                      :  4442  0.00  3.04
-cudaLaunchKernel                : 19336  0.00  2.59
+CPU Timers                                           : #calls|   mean |   total
+                                           APEX MAIN :      1   347.70   347.70
+                             Kokkos region, TimeLoop :      1   343.13   343.13
+                                  Kokkos region, AMR :    418     0.50   207.81
+                  Kokkos region, AMR: remap userdata :    418     0.24    99.92
+               Kokkos region, HyperbolicUpdate_euler :    418     0.20    81.92
+    Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch :    418     0.19    79.84
 \end{lstlisting}
 \end{beamerboxesrounded}
 
 \vspace{0.1em}
-{\scriptsize \texttt{Counter} reports sampled GPU metrics: memory use, utilization, and power. \texttt{CPU Timers} reports the main runtime calls and regions. On this small case, low GPU use and visible CUDA runtime overhead show that \texttt{test\_blast\_2D\_block.ini} does not saturate the GPU.}
+{\scriptsize \texttt{Counter} reports sampled host/process metrics in this run, while \texttt{CPU Timers} reports the dominant APEX timers. Here the same hierarchy seen on the previous slide also appears in the timer ranking, with \texttt{HydroE::Patch} near the top.}
 \end{frame}
 
 % =========================================================
