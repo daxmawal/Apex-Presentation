@@ -54,6 +54,7 @@
 \definecolor{ceaGray}{RGB}{230,245,239}
 \definecolor{ceaLight}{RGB}{230,245,239}
 \definecolor{hlOrange}{RGB}{255,128,0}
+\definecolor{apexTuneOrange}{RGB}{190,100,0}
 \definecolor{hlOrangeBg}{RGB}{255,245,230}
 \definecolor{termBg}{RGB}{28,31,36}
 \definecolor{termBar}{RGB}{62,67,76}
@@ -178,12 +179,12 @@
 \begin{frame}[t]{Two complementary roles}
 \begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{Profiler}
 \small
-Measure where time goes during a run.
+Aggregate timing and counter statistics.
 \vspace{0.5em}
 \begin{itemize}\itemsep0.3em
-    \item Kokkos regions and CUDA runtime
+    \item Kokkos regions, kernels, and CUDA runtime calls
     \item NVML GPU metrics
-    \item End-of-run hotspot summary
+    \item End-of-run performance summary
 \end{itemize}
 \end{beamerboxesrounded}
 
@@ -191,18 +192,18 @@ Measure where time goes during a run.
 
 \begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Tuner}
 \small
-Search for better execution parameters.
+Search better Kokkos launch parameters.
 \vspace{0.5em}
 \begin{itemize}\itemsep0.3em
-    \item Reacts to Kokkos tuning requests
-    \item Explores candidate configurations online
-    \item Reuses converged configurations and can cache them in YAML
+    \item Handles Kokkos tuning requests
+    \item Tries candidate configurations online
+    \item Reuses converged configurations and can write them to YAML
 \end{itemize}
 \end{beamerboxesrounded}
 \end{frame}
 
 % =========================================================
-\section{2. Apex profiling on Dyablo}
+\section{2. APEX profiling on Dyablo}
 % =========================================================
 
 \begin{frame}[fragile,t]{Command line}
@@ -230,11 +231,11 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{KOKKOS\_TOOLS\_LIBS=...}}} loads \texttt{libapex.so} as the Kokkos tool.
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_SCREEN\_OUTPUT=1}}} prints the summary in the terminal.
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}}} asks Kokkos to fence after kernel launches for more reliable timings.
-    \item The last five variables enable CUDA activity tracing, CUDA counters, kernel details, and NVML GPU metrics.
+    \item The last five variables enable CUDA tracing, CUDA counters, kernel details, and NVML metrics.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile,t]{What Dyablo and APEX reports}
+\begin{frame}[fragile,t]{What Dyablo and APEX report}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
@@ -242,11 +243,11 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \texttt{\scriptsize Dyablo and APEX screen output (heavily truncated)}}
 {\ttfamily\tiny\color{termText}
 \begin{semiverbatim}
-\textcolor{hotspotBlue}{APEX Version: -bd4b707-fix/cuda-nvml-gpu-timers}
-\textcolor{hotspotBlue}{KOKKOS CONFIG}
-\textcolor{hotspotBlue}{  Kokkos Version: 5.0.0}
-\textcolor{hotspotBlue}{  Default Device: Cuda}
-\textcolor{hotspotBlue}{  GPU architecture: ADA89}
+\textcolor{white}{APEX Version: -bd4b707-fix/cuda-nvml-gpu-timers}
+\textcolor{white}{KOKKOS CONFIG}
+\textcolor{white}{  Kokkos Version: 5.0.0}
+\textcolor{white}{  Default Device: Cuda}
+\textcolor{white}{  GPU architecture: ADA89}
 ----------------------------------------
 \textcolor{hlOrange}{Total               CPU 49.526 s | GPU 49.525 s}
 \textcolor{hlOrange}{| TimeLoop          CPU 46.971 s | GPU 46.971 s}
@@ -263,7 +264,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \end{semiverbatim}}
 \end{beamerboxesrounded}
 \vspace{0.2em}
-{\scriptsize \textcolor{hlOrange}{Dyablo} timer hierarchy exported through regions. \textcolor{hotspotBlue}{APEX} runtime banner, NVML counters, and CPU timer summary.}
+{\scriptsize \textcolor{hlOrange}{Dyablo timers} exported through regions, plus \textcolor{hotspotBlue}{APEX} banner, NVML counters, and CPU timer summary.}
 \end{frame}
 
 \begin{frame}[fragile,t]{APEX sees Dyablo's timer hierarchy}
@@ -272,7 +273,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize Dyablo timer hierarchy exported through Kokkos regions}}
+\texttt{\scriptsize Dyablo's timer hierarchy exported through Kokkos regions}}
 {\ttfamily\tiny\color{termText}
 \begin{semiverbatim}
 Total                     time (CPU) :    49.526 s (100.00%) , (GPU) :    49.525 s (100.00%)
@@ -299,13 +300,13 @@ Total                     time (CPU) :    49.526 s (100.00%) , (GPU) :    49.525
 \end{semiverbatim}}
 \end{beamerboxesrounded}
 \vspace{0.2em}
-{\scriptsize This hierarchy is produced by Dyablo's own timers. APEX can observe the same structure because Dyablo exports these phases through \texttt{Kokkos::Profiling::pushRegion()/popRegion()}.}
+{\scriptsize Dyablo already records this hierarchy in its own timers. APEX sees the same phases because Dyablo exports them through \texttt{Kokkos::Profiling::pushRegion()/popRegion()}.}
 
 \vspace{0.1em}
-{\scriptsize In this presentation, hotspots are highlighted in \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\textcolor{hlOrange}{orange}}}.}
+{\scriptsize Hotspots are highlighted in \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\textcolor{hlOrange}{orange}}}.}
 \end{frame}
 
-\begin{frame}[fragile,t]{APEX observations on Dyablo run}
+\begin{frame}[fragile,t]{APEX counters and CPU timers}
 \small
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
@@ -333,14 +334,14 @@ cudaLaunchKernel                : 19336  0.00  2.59
 \end{beamerboxesrounded}
 
 \vspace{0.1em}
-{\scriptsize \texttt{Counter} shows sampled GPU metrics such as memory use, utilization and power. \texttt{CPU Timers} shows the dominant runtime calls and regions. Here, low GPU use plus CUDA runtime overhead show that \texttt{test\_blast\_2D\_block.ini} does not saturate the GPU.}
+{\scriptsize \texttt{Counter} reports sampled GPU metrics: memory use, utilization, and power. \texttt{CPU Timers} reports the main runtime calls and regions. On this small case, low GPU use and visible CUDA runtime overhead show that \texttt{test\_blast\_2D\_block.ini} does not saturate the GPU.}
 \end{frame}
 
 % =========================================================
-\section{3. Apex auto-tuning with Dyablo}
+\section{3. APEX auto-tuning with Dyablo}
 % =========================================================
 
-\begin{frame}[fragile,t]{Apex auto-tuning command line}
+\begin{frame}[fragile,t]{APEX auto-tuning command line}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
@@ -364,14 +365,14 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \begin{itemize}\itemsep0.02em
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{KOKKOS\_TUNE\_INTERNALS=1}}} asks Kokkos to expose internal tuners.
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING=1}}} enables the APEX tuner.
-    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING\_POLICY=simulated\_annealing}}} selects the search strategy.
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING\_POLICY=...}}} selects the search strategy.
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING\_WINDOW=5}}} requires at least 5 observations for one context before APEX triggers a tuning update.
 \end{itemize}
 \end{frame}
 
 \begin{frame}[t]{How APEX auto-tuning works}
 \scriptsize
-{\color{ceaGreen}\textbf{APEX learns online across repeated visits to the same context during a Dyablo run.}}
+{\color{ceaGreen}\textbf{APEX refines each context over repeated visits during the run.}}
 
 \vspace{0.1em}
 \begin{columns}[T,onlytextwidth]
@@ -424,13 +425,13 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \end{adjustbox}
 
 \vspace{0.05em}
-{\tiny\color{black!75}\textbf{Convergence:} once APEX stops searching for one context, it reuses that stable configuration and can write it to the YAML cache.}
+{\tiny\color{black!75}\textbf{Convergence:} once APEX stops searching for a context, it reuses that stable configuration and can write it to the YAML cache.}
 
 \column{0.35\textwidth}
 \begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Context}
 \tiny
 \raggedright
-A context is one tunable Kokkos execution context.
+One context = one tunable kernel signature.
 
 \vspace{0.08em}
 Here it is identified by \texttt{kernel name}, \texttt{kernel type}, and the current exported \texttt{region} in the APEX \texttt{tree node}.
@@ -450,17 +451,117 @@ Typical Kokkos internal knobs:\\
 \tiny
 \raggedright
 \texttt{window = 5}\\
-allow a tuning update after at least 5 observations
+update tuning state after at least 5 observations
 
 \vspace{0.05em}
 \texttt{Converged = true}\\
-reuse later in the run and from YAML cache in later runs
+reuse later in the run and from YAML in later runs
 
 \vspace{0.05em}
 \texttt{Converged = false}\\
-not reused from the YAML cache, a later run starts tuning that context again
+do not reuse from YAML, a later run retunes that context
 \end{beamerboxesrounded}
 \end{columns}
+\end{frame}
+
+\begin{frame}[fragile,t]{One Dyablo kernel tuned by APEX}
+\small
+\begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{%
+\texttt{\scriptsize core/src/mpi/GhostCommunicator\_partial\_blocks.cpp}}
+\begin{lstlisting}[language=C++,basicstyle=\ttfamily\tiny,backgroundcolor=\color{white},numbers=none,frame=none,showstringspaces=false,columns=fullflexible,escapeinside={(*@}{@*)}]
+Kokkos::parallel_for("GhostCommunicator_partial_blocks::list_send_cells",
+  (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::TeamPolicy<>(}}@*)(*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{ghostmap.send_iOcts.size(), Kokkos::AUTO, }}@*)(*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::AUTO}}@*)(*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{)}}@*),
+  KOKKOS_LAMBDA((*@{\color{black}\ttfamily\tiny \detokenize{const}}@*) Kokkos::TeamPolicy<>::member_type& team)
+{
+  uint32_t iOct = team.league_rank();
+  GhostMap_t::CellMask facemask = ghostmap.send_cell_masks(iOct);
+  uint32_t iCell_begin = offset_iOct(iOct);
+  uint32_t current_send_iOct = ghostmap.send_iOcts(iOct);
+
+  (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::parallel_for(Kokkos::TeamVectorRange(team, facemask_count(facemask)),}}@*)
+    [&](uint32_t i) {
+      send_iOct(iCell_begin + i) = current_send_iOct;
+      send_iCell(iCell_begin + i) = facemask_iCells(facemask, i);
+    });
+});
+\end{lstlisting}
+\end{beamerboxesrounded}
+
+\vspace{0.1em}
+\scriptsize
+\begin{itemize}\itemsep0.12em
+    \item \textcolor{apexTuneOrange}{\texttt{Kokkos::TeamPolicy(..., Kokkos::AUTO, Kokkos::AUTO)}} exposes both internal knobs for this kernel context.
+    \item The first \textcolor{apexTuneOrange}{\texttt{Kokkos::AUTO}} lets APEX explore \textcolor{apexTuneOrange}{\texttt{team\_size}}, the second lets it explore \textcolor{apexTuneOrange}{\texttt{vector\_length}}.
+    \item This matches the next slide: APEX reports candidates for both knobs.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,t]{APEX tuning trace for \texttt{list\_send\_cells}}
+\begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
+\textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
+\texttt{\scriptsize autotune.log excerpt for list\_send\_cells}}
+{\ttfamily\tiny\color{termText}
+\begin{semiverbatim}
+  -cv: [kokkos.kernel_name:GhostCommunicator_partial_blocks::list_send_cells,
+        kokkos.kernel_type:parallel_for, ...]
+  -tv: [..._vector_length:0.04995, ..._team_size:0.04995]
+  querying time per call: 2.1286e-05s
+\textcolor{hotspotBlue}{Simulated Annealing: New best! ... team_size: 0.049950, vector_length: 0.049950}
+  ...
+  -tv: [..._vector_length:0.1998, ..._team_size:0.0999]
+  querying time per call: 1.6368e-05s
+\textcolor{hotspotBlue}{Simulated Annealing: New best! ... team_size: 0.099900, vector_length: 0.199800}
+  ...
+  -tv: [..._vector_length:0.14985, ..._team_size:0.14985]
+  querying time per call: 1.0684e-05s
+\textcolor{hlOrange}{Simulated Annealing: New best! ... team_size: 0.149850, vector_length: 0.149850}
+\end{semiverbatim}}
+\end{beamerboxesrounded}
+
+\vspace{0.1em}
+\scriptsize
+\begin{itemize}\itemsep0.12em
+    \item The \texttt{-tv} line contains two search coordinates: one for \texttt{vector\_length}, one for \texttt{team\_size}.
+    \item These are normalized coordinates in \texttt{[0,1)}, not final integer Kokkos values.
+    \item Kokkos maps \texttt{vector\_length} to legal CUDA values \texttt{\{1, 2, 4, 8, 16, 32\}}, and maps \texttt{team\_size} to a legal team size for this kernel and the selected \texttt{vector\_length}.
+    \item The log stores the normalized coordinates only.
+    \item Best time drops from \texttt{2.1286e-05 s} to \texttt{1.0684e-05 s} per call, about \textbf{2.0x faster}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,t]{APEX YAML cache after the run}
+\begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
+\textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
+\texttt{\scriptsize apex\_converged\_tuning.0.yaml excerpt}}
+{\ttfamily\tiny\color{termText}
+\begin{semiverbatim}
+Output_3:
+  name: GhostCommunicator_partial_blocks::\textcolor{green!70!black}{list_send_cells_vector_length}
+  info.candidates: \textcolor{hotspotBlue}{[lower: 0, upper: 0.999, step: 0.04995]}
+Output_4:
+  name: GhostCommunicator_partial_blocks::\textcolor{green!70!black}{list_send_cells_team_size}
+  info.candidates: \textcolor{hotspotBlue}{[lower: 0, upper: 0.999, step: 0.04995]}
+Context_2:
+  Name: "[kokkos.kernel_name:GhostCommunicator_partial_blocks::list_send_cells,
+         kokkos.kernel_type:parallel_for, ...]"
+  Strategy: "simulated annealing"
+\textcolor{hlOrange}{  Converged: false}
+\end{semiverbatim}}
+\end{beamerboxesrounded}
+
+\vspace{0.1em}
+\scriptsize
+\begin{itemize}\itemsep0.12em
+    \item \textcolor{green!70!black}{\texttt{Output\_3}} is the normalized axis for \texttt{vector\_length}, \textcolor{green!70!black}{\texttt{Output\_4}} is the normalized axis for \texttt{team\_size}.
+    \item Both outputs use the same \textcolor{hotspotBlue}{\texttt{[lower: 0, upper: 0.999, step: 0.04995]}} declaration because APEX stores normalized search axes, not final Kokkos sizes.
+    \item The YAML records that this kernel has two tuning knobs, \textcolor{green!70!black}{\texttt{vector\_length}} and \textcolor{green!70!black}{\texttt{team\_size}}, and one tuning context.
+    \item The cache is not settled yet, the context still ends with \textcolor{hlOrange}{\texttt{Converged: false.}}
+\item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{So the next Dyablo run cannot yet reload one final winning configuration from this YAML, and APEX will start tuning this context again from scratch.}}}
+\end{itemize}
 \end{frame}
 
 % =========================================================
