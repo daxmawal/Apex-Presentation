@@ -172,7 +172,7 @@
         \item how APEX tunes Kokkos internal execution parameters
     \end{itemize}
     \item Integration branch: \href{https://github.com/daxmawal/Dyablo-apex/tree/apex}{\texttt{daxmawal/Dyablo-apex}, branch \texttt{apex}}.
-    \item All Dyablo examples in this presentation are run with \texttt{test\_blast\_2D\_block.ini}.
+    \item All Dyablo examples in this presentation are run with \texttt{test\_sod\_3D.ini}.
 \end{itemize}
 \end{frame}
 
@@ -222,7 +222,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 > APEX_CUDA_COUNTERS=1 \
 > APEX_CUDA_KERNEL_DETAILS=1 \
 > APEX_CUDA_KERNEL_ACTIVITY=1 \
-> ./dyablo test_blast_2D_block.ini
+> ./dyablo test_sod_3D.ini
 \end{lstlisting}
 \end{beamerboxesrounded}
 
@@ -357,7 +357,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 > APEX_KOKKOS_TUNING_POLICY=simulated_annealing \
 > APEX_KOKKOS_TUNING_WINDOW=5 \
 > APEX_KOKKOS_VERBOSE=1 \
-> ./dyablo test_blast_2D_block.ini
+> ./dyablo test_sod_3D.ini
 \end{lstlisting}
 \end{beamerboxesrounded}
 
@@ -470,32 +470,34 @@ do not reuse from YAML, a later run retunes that context
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize core/src/mpi/GhostCommunicator\_partial\_blocks.cpp}}
+\texttt{\scriptsize core/src/hyperbolic/scheme/Hyperbolic\_euler.h}}
 \begin{lstlisting}[language=C++,basicstyle=\ttfamily\tiny\color{termText},keywordstyle=\color{termText},stringstyle=\color{termText},commentstyle=\color{termText},identifierstyle=\color{termText},backgroundcolor=\color{termBg},numbers=none,frame=none,showstringspaces=false,columns=fullflexible,escapeinside={(*@}{@*)}]
-Kokkos::parallel_for("GhostCommunicator_partial_blocks::list_send_cells",
-  (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::TeamPolicy<>(}}@*)(*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{ghostmap.send_iOcts.size(), Kokkos::AUTO, }}@*)(*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::AUTO}}@*)(*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{)}}@*),
-  KOKKOS_LAMBDA(const Kokkos::TeamPolicy<>::member_type& team)
-{
-  uint32_t iOct = team.league_rank();
-  GhostMap_t::CellMask facemask = ghostmap.send_cell_masks(iOct);
-  uint32_t iCell_begin = offset_iOct(iOct);
-  uint32_t current_send_iOct = ghostmap.send_iOcts(iOct);
+Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"HydroE::Patch"}}@*),
+  TeamPolicy(nbOcts, (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::AUTO()}}@*), (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::AUTO()}}@*))
+    .set_scratch_size(...),
+  KOKKOS_LAMBDA(member_type team) {
 
-  (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::parallel_for(Kokkos::TeamVectorRange(team, facemask_count(facemask)),}}@*)
-    [&](uint32_t i) {
-      send_iOct(iCell_begin + i) = current_send_iOct;
-      send_iCell(iCell_begin + i) = facemask_iCells(facemask, i);
+    Patch patch(..., team);
+    auto Qpatch = patch.allocate_tmp(...);
+
+    patch.foreach_cell((*@{\color{green!70!black}\ttfamily\tiny \detokenize{"HydroE::QPatch"}}@*), Qpatch, [&](CellIndex i) {
+      // conservative -> primitive
     });
-});
+
+    patch.foreach_cell((*@{\color{green!70!black}\ttfamily\tiny \detokenize{"HydroE::Flux"}}@*), Uout.getShape(), [&](CellIndex i) {
+      // slopes + reconstruction + Riemann solver
+      // atomic_add on Uout
+    });
+  });
 \end{lstlisting}
 \end{beamerboxesrounded}
 
 \vspace{0.1em}
 \scriptsize
 \begin{itemize}\itemsep0.12em
-    \item \textcolor{apexTuneOrange}{\texttt{Kokkos::TeamPolicy(..., Kokkos::AUTO, Kokkos::AUTO)}} exposes both internal knobs for this kernel context.
-    \item The first \textcolor{apexTuneOrange}{\texttt{Kokkos::AUTO}} lets APEX explore \textcolor{apexTuneOrange}{\texttt{team\_size}}, the second lets it explore \textcolor{apexTuneOrange}{\texttt{vector\_length}}.
-    \item This matches the next slide \texttt{APEX reports candidates for both knobs}.
+    \item \textcolor{apexTuneOrange}{\texttt{HydroE::Patch}} is the single APEX-visible tuning context for this Dyablo hydro kernel.
+    \item In \texttt{TeamPolicy(nbOcts, AUTO, AUTO)}, the first \textcolor{apexTuneOrange}{\texttt{AUTO}} leaves \texttt{team\_size} open, and the second leaves \texttt{vector\_length} open for APEX to tune.
+    \item \textcolor{green!70!black}{\texttt{HydroE::QPatch}} and \textcolor{green!70!black}{\texttt{HydroE::Flux}} stay fused inside that launch, so APEX tunes the outer launch policy, not the hydro algebra inside the two phases.
 \end{itemize}
 \end{frame}
 
