@@ -698,6 +698,9 @@ if (tuning) {
     Kokkos::parallel_for(hydro_patch_label, ...); // HydroE::Patch
     restore_state_for_next_pass();
   }
+  restore_reference_inputs();
+  reset_reference_outputs();
+  Kokkos::parallel_for(hydro_patch_label, ...);   // final real launch
 } else {
   Kokkos::parallel_for(hydro_patch_label, ...); // HydroE::Patch
 }
@@ -708,7 +711,7 @@ if (tuning) {
 \scriptsize
 \begin{itemize}\itemsep0.08em
     \item Splitting \texttt{HydroE::Patch} into several APEX labels is not enough, APEX still needs repeated visits to each context.
-    \item One short Dyablo pass per label is often too short, so the search still end with \texttt{Converged: false}.
+    \item One short Dyablo pass per label is often too short, so the search still ends with \texttt{Converged: false}.
     \item Each tuning pass must restart from the same inputs and outputs, otherwise APEX measures a changing state.
 \end{itemize}
 
