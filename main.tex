@@ -60,6 +60,7 @@
 \definecolor{termBar}{RGB}{62,67,76}
 \definecolor{termText}{RGB}{236,239,244}
 \definecolor{hotspotBlue}{RGB}{120,190,255}
+\definecolor{patchBlue}{RGB}{80,140,220}
 
 \hypersetup{colorlinks=true,linkcolor=black,urlcolor=ceaGreen,citecolor=ceaGreen}
 
@@ -241,31 +242,33 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize Dyablo and APEX screen output (heavily truncated)}}
+\texttt{\scriptsize Dyablo and APEX profiling.log excerpt (truncated)}}
 {\ttfamily\tiny\color{termText}
 \begin{semiverbatim}
-\textcolor{white}{APEX Version: -bd4b707-fix/cuda-nvml-gpu-timers}
+\textcolor{white}{APEX Version: v2.7.1-2bd7ac2c-develop}
+\textcolor{white}{Executing command line: ./dyablo test_sod_3D.ini}
 \textcolor{white}{KOKKOS CONFIG}
 \textcolor{white}{  Kokkos Version: 5.0.0}
-\textcolor{white}{  Default Device: Cuda}
-\textcolor{white}{  GPU architecture: ADA89}
+  \textcolor{white}{  Default Device: Cuda}
+  \textcolor{white}{  GPU architecture: ADA89}
 ----------------------------------------
-\textcolor{hlOrange}{Total               CPU 49.526 s | GPU 49.525 s}
-\textcolor{hlOrange}{| TimeLoop          CPU 46.971 s | GPU 46.971 s}
-\textcolor{hlOrange}{| | Hyperbolic...   CPU 18.651 s | GPU 18.651 s}
-\textcolor{hlOrange}{| | AMR             CPU  5.701 s | GPU  5.700 s}
+\textcolor{hlOrange}{Total                         time (CPU) :   346.719 s , (GPU) :   346.713 s}
+\textcolor{hlOrange}{| TimeLoop                    time (CPU) :   343.129 s , (GPU) :   343.123 s}
+\textcolor{hlOrange}{| | AMR                       time (CPU) :   207.811 s , (GPU) :   207.808 s}
+\textcolor{hlOrange}{| | HyperbolicUpdate_euler    time (CPU) :    81.917 s , (GPU) :    81.916 s}
 ----------------------------------------
-\textcolor{hotspotBlue}{Counter                         : #samp | mean | max}
-\textcolor{hotspotBlue}{GPU: [NVML] Memory Used (GB)    :    49   1.44   1.45}
-\textcolor{hotspotBlue}{GPU: [NVML] Utilization (%)     :    44   2.95  10.00}
+\textcolor{hotspotBlue}{Counter                                              :  #samp |   mean  |  max}
+\textcolor{hotspotBlue}{                                      status:Threads :    343    38.00    38.00}
+\textcolor{hotspotBlue}{                                     status:VmRSS kB :    343 1.76e+05 1.81e+05}
 ----------------------------------------
-\textcolor{hotspotBlue}{CPU Timers                      : #calls| mean | total}
-\textcolor{hotspotBlue}{cudaDeviceSynchronize           : 78268   0.00    8.32}
-\textcolor{hotspotBlue}{cudaSetDevice                   :114245   0.00    7.68}
+\textcolor{hotspotBlue}{CPU Timers                                           : #calls|   mean |   total}
+\textcolor{hotspotBlue}{               Kokkos region, HyperbolicUpdate_euler :    418     0.20    81.92}
+\textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{patchBlue}{    Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch :    418     0.19    }}\textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.20pt}{\textcolor{red!80!black}{\textbf{79.84}}}
+\textcolor{hotspotBlue}{     Kokkos::parallel_for [Cuda, Dev:0] HydroE::Init :    418     0.00     0.29}
 \end{semiverbatim}}
 \end{beamerboxesrounded}
 \vspace{0.2em}
-{\scriptsize \textcolor{hlOrange}{Dyablo timers} exported through regions, plus \textcolor{hotspotBlue}{APEX} banner, NVML counters, and CPU timer summary.}
+{\scriptsize \textcolor{hlOrange}{Dyablo timers} exported through regions, plus \textcolor{hotspotBlue}{APEX} counters and CPU timers. In this run, \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{patchBlue}{\texttt{HydroE::Patch}}} is already the dominant kernel inside \texttt{HyperbolicUpdate\_euler}.}
 \end{frame}
 
 \begin{frame}[fragile,t]{APEX sees Dyablo's timer hierarchy}
