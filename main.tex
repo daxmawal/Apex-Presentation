@@ -211,7 +211,7 @@ Search for better execution parameters.
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
 \texttt{\scriptsize Dyablo with APEX profiling}}
-\begin{lstlisting}[style=terminal,basicstyle=\ttfamily\footnotesize\color{termText}]
+\begin{lstlisting}[style=terminal,basicstyle=\ttfamily\scriptsize\color{termText}]
 $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 > APEX_SCREEN_OUTPUT=1 \
 > APEX_KOKKOS_PROFILING_FENCES=1 \
@@ -334,24 +334,130 @@ cudaLaunchKernel                : 19336  0.00  2.59
 \section{3. Apex auto-tuning with Dyablo}
 % =========================================================
 
-\begin{frame}[t]{Auto-tuning}
-\large
-\todo{Explain APEX auto-tuning on Dyablo.}
+\begin{frame}[fragile,t]{Apex auto-tuning command line}
+\begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
+\textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
+\texttt{\scriptsize Dyablo with APEX auto-tuning}}
+\begin{lstlisting}[style=terminal,basicstyle=\ttfamily\footnotesize\color{termText}]
+$ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
+> APEX_SCREEN_OUTPUT=1 \
+> APEX_KOKKOS_PROFILING_FENCES=1 \
+> KOKKOS_TUNE_INTERNALS=1 \
+> APEX_KOKKOS_TUNING=1 \
+> APEX_KOKKOS_TUNING_POLICY=simulated_annealing \
+> APEX_KOKKOS_TUNING_WINDOW=5 \
+> APEX_KOKKOS_VERBOSE=1 \
+> ./dyablo test_blast_2D_block.ini
+\end{lstlisting}
+\end{beamerboxesrounded}
+
+{\color{ceaGreen}\scriptsize Main tuning options}
+\scriptsize
+\begin{itemize}\itemsep0.02em
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{KOKKOS\_TUNE\_INTERNALS=1}}} asks Kokkos to expose internal tuners.
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING=1}}} enables the APEX tuner.
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING\_POLICY=simulated\_annealing}}} selects the search strategy.
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING\_WINDOW=5}}} means that each candidate is evaluated over a window of 5 observations before APEX updates its search state.
+\end{itemize}
 \end{frame}
 
-\begin{frame}[t]{Auto-tuning on Dyablo}
-\large
-\todo{Show auto-tuning results on a larger case.}
+\begin{frame}[t]{How APEX auto-tuning works}
+\scriptsize
+{\color{ceaGreen}\textbf{APEX learns online across repeated visits to the same context during normal execution.}}
+
+\vspace{0.1em}
+\begin{columns}[T,onlytextwidth]
+\column{0.62\textwidth}
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}[
+  x=1cm,
+  y=1cm,
+  >=Latex,
+  every node/.style={align=center},
+  lane/.style={draw, rounded corners=10pt, minimum width=4.7cm, minimum height=7.0cm},
+  lanehdr/.style={font=\scriptsize\bfseries, text=black!70},
+  stage/.style={draw, rounded corners=7pt, thick, fill=white, minimum height=0.82cm, text width=2.95cm, inner sep=3pt, font=\scriptsize},
+  decision/.style={diamond, draw=black!65, fill=black!3, aspect=1.7, inner sep=1.4pt, font=\tiny\bfseries},
+  cachebox/.style={draw, rounded corners=6pt, thick, fill=yellow!12, draw=yellow!55!black, minimum height=0.82cm, text width=1.65cm, inner sep=2.5pt, font=\tiny},
+  arr/.style={-Latex, thick},
+  looparr/.style={-Latex, thick, dashed, draw=black!65}
+]
+\node[lane, fill=hotspotBlue!5, draw=hotspotBlue!35] at (1.85,-2.15) {};
+\node[lane, fill=ceaGreen!5, draw=ceaGreen!35] at (7.1,-2.15) {};
+\node[lanehdr] at (1.85,1.08) {Dyablo / Kokkos};
+\node[lanehdr] at (7.1,1.08) {APEX};
+
+\node[stage, fill=hotspotBlue!12, draw=hotspotBlue!80!black] (dy1) at (1.85,0.2)
+  {\textbf{1. Invocation}\\same tunable Kokkos call site reached};
+\node[stage, fill=ceaGreen!12, draw=ceaGreen] (ap1) at (7.1,0.2)
+  {\textbf{2. Request}\\context and tunable variables sent to APEX};
+\node[stage, fill=orange!15, draw=orange!80!black] (ap2) at (7.1,-1.6)
+  {\textbf{3. Cache/Candidate}\\reuse YAML tuning for this context, or choose a candidate};
+\node[stage, fill=red!8, draw=red!70!black] (dy2) at (1.85,-1.6)
+  {\textbf{4. Kernel Runs}\\one execution with the chosen parameters};
+\node[stage, fill=black!4, draw=black!60] (ap3) at (7.1,-3.3)
+  {\textbf{5. Update State}\\record observation; after each window, continue or stop};
+\node[stage, fill=hotspotBlue!12, draw=hotspotBlue!80!black] (dy3) at (1.85,-4.7)
+  {\textbf{6. Later Visit}\\same call site hit again later in the run};
+\node[decision] (conv) at (6.00,-4.9) {Converged?};
+\node[cachebox] (yaml) at (8.4,-4.9)
+  {\textbf{YAML cache}\\write stable tuning};
+
+\draw[arr] (dy1.east) -- (ap1.west);
+\draw[arr] (ap1) -- (ap2);
+\draw[arr] (ap2.west) -- (dy2.east);
+\draw[arr] (dy2.east) -- (ap3.west);
+\draw[arr] (ap3.south) -- (conv.north);
+\draw[arr] (conv.east) -- node[above,font=\tiny] {yes} (yaml.west);
+\draw[looparr] (conv.west) to[bend right=16] node[below,font=\tiny,text width=1.9cm,xshift=-0cm,yshift=0.45cm]
+  {no: revisit later} (dy3.east);
+\end{tikzpicture}
+\end{adjustbox}
+
+\vspace{0.05em}
+{\tiny\color{black!75}\textbf{Convergence:} once APEX stops searching for one context, it reuses that stable configuration and can write it to the YAML cache.}
+
+\column{0.35\textwidth}
+\begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Context}
+\tiny
+\raggedright
+A context is one tunable Kokkos call site.
+
+\vspace{0.08em}
+Here it is identified by \texttt{kernel name}, \texttt{kernel type}, and \texttt{tree node}.
+\end{beamerboxesrounded}
+
+\vspace{0.28em}
+\begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{Tuned Knobs}
+\tiny
+\raggedright
+\texttt{team\_size}, \texttt{vector\_length}, \texttt{tile\_0}, \texttt{tile\_1}, \texttt{tile\_2}
+\end{beamerboxesrounded}
+
+\vspace{0.18em}
+\begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{Window / Cache}
+\tiny
+\raggedright
+\texttt{window = 5}\\
+update the candidate after 5 observations
+
+\vspace{0.05em}
+\texttt{Converged = true}\\
+reuse later in the run and across runs
+
+\vspace{0.05em}
+\texttt{Converged = false}\\
+later Dyablo runs may revisit the same APEX configuration search space, and the search may never converge
+\end{beamerboxesrounded}
+\end{columns}
 \end{frame}
 
 % =========================================================
 \section*{Conclusion}
 % =========================================================
-
-\begin{frame}[t]{Conclusion}
-\large
-\todo{Add conclusion.}
-\end{frame}
 
 \begin{frame}[fragile]
   \begin{center}
