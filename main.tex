@@ -493,7 +493,7 @@ Kokkos::parallel_for("GhostCommunicator_partial_blocks::list_send_cells",
 \begin{itemize}\itemsep0.12em
     \item \textcolor{apexTuneOrange}{\texttt{Kokkos::TeamPolicy(..., Kokkos::AUTO, Kokkos::AUTO)}} exposes both internal knobs for this kernel context.
     \item The first \textcolor{apexTuneOrange}{\texttt{Kokkos::AUTO}} lets APEX explore \textcolor{apexTuneOrange}{\texttt{team\_size}}, the second lets it explore \textcolor{apexTuneOrange}{\texttt{vector\_length}}.
-    \item This matches the next slide: APEX reports candidates for both knobs.
+    \item This matches the next slide \texttt{APEX reports candidates for both knobs}.
 \end{itemize}
 \end{frame}
 
@@ -504,10 +504,10 @@ Kokkos::parallel_for("GhostCommunicator_partial_blocks::list_send_cells",
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
 \texttt{\scriptsize autotune.log excerpt for list\_send\_cells}}
 {\ttfamily\tiny\color{termText}
-\begin{semiverbatim}
+  \begin{semiverbatim}
   -cv: [kokkos.kernel_name:GhostCommunicator_partial_blocks::list_send_cells,
-        kokkos.kernel_type:parallel_for, ...]
-  -tv: [..._vector_length:0.04995, ..._team_size:0.04995]
+        kokkos.kernel_type:parallel_for, ...] \textcolor{termText!45!termBg}{                                 // -cv -> context variable}
+  -tv: [..._vector_length:0.04995, ..._team_size:0.04995] \textcolor{termText!45!termBg}{                     // -tv -> tuning variable}
   querying time per call: 2.1286e-05s
 \textcolor{hotspotBlue}{Simulated Annealing: New best! ... team_size: 0.049950, vector_length: 0.049950}
   ...
@@ -561,7 +561,7 @@ Context_2:
     \item Both outputs use the same \textcolor{hotspotBlue}{\texttt{[lower: 0, upper: 0.999, step: 0.04995]}} declaration because APEX stores normalized search axes, not final Kokkos sizes.
     \item The YAML records that this kernel has two tuning knobs, \textcolor{green!70!black}{\texttt{vector\_length}} and \textcolor{green!70!black}{\texttt{team\_size}}, and one tuning context.
     \item The cache is not settled yet, the context still ends with \textcolor{hlOrange}{\texttt{Converged: false.}}
-    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{So the next Dyablo run cannot yet reload one final winning configuration from this YAML. Part of the next run will replay candidates already seen in the previous one.}}}
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{So the next Dyablo run cannot yet reload one final winning configuration from this YAML. The next run will replay candidates already seen in the previous one.}}}
 \end{itemize}
 \end{frame}
 
