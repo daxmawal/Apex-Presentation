@@ -501,38 +501,41 @@ Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"Hydro
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile,t]{APEX tuning trace for \texttt{list\_send\_cells}}
+\begin{frame}[fragile,t]{APEX tuning trace for \texttt{HydroE::Patch}}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize autotune.log excerpt for list\_send\_cells}}
+\texttt{\scriptsize autotuning log excerpt for HydroE::Patch}}
 {\ttfamily\tiny\color{termText}
   \begin{semiverbatim}
-  -cv: [kokkos.kernel_name:GhostCommunicator_partial_blocks::list_send_cells,
-        kokkos.kernel_type:parallel_for, ...] \textcolor{termText!45!termBg}{                                 // -cv -> context variable}
-  -tv: [..._vector_length:0.04995, ..._team_size:0.04995] \textcolor{termText!45!termBg}{                     // -tv -> tuning variable}
-  querying time per call: 2.1286e-05s
-\textcolor{hotspotBlue}{Simulated Annealing: New best! ... team_size: 0.049950, vector_length: 0.049950}
+  -cv: 2[kokkos.kernel_name:HydroE::Patch,kokkos.kernel_type:parallel_for,
+        tree_node:Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch] \textcolor{termText!45!termBg}{         // -cv -> context variables}
+  -tv: 2[HydroE::Patch_vector_length:0.14985,HydroE::Patch_team_size:0.0999] \textcolor{termText!45!termBg}{// -tv -> tuning variables}
+  querying time per call: 0.145121s
+\textcolor{hotspotBlue}{Simulated Annealing: New best! 0.145121 k: 1 kmax: 324 temp: 0.00308642,}
+\textcolor{hotspotBlue}{HydroE::Patch_team_size: 0.099900, HydroE::Patch_vector_length: 0.149850}
   ...
-  -tv: [..._vector_length:0.1998, ..._team_size:0.0999]
-  querying time per call: 1.6368e-05s
-\textcolor{hotspotBlue}{Simulated Annealing: New best! ... team_size: 0.099900, vector_length: 0.199800}
+  -tv: 2[HydroE::Patch_vector_length:0.04995,HydroE::Patch_team_size:0.34965]
+  querying time per call: 0.0321333s
+\textcolor{hotspotBlue}{Simulated Annealing: New best! 0.0321333 k: 10 kmax: 324 temp: 0.0308642,}
+\textcolor{hotspotBlue}{HydroE::Patch_team_size: 0.349650, HydroE::Patch_vector_length: 0.049950}
   ...
-  -tv: [..._vector_length:0.14985, ..._team_size:0.14985]
-  querying time per call: 1.0684e-05s
-\textcolor{hlOrange}{Simulated Annealing: New best! ... team_size: 0.149850, vector_length: 0.149850}
+  -tv: 2[HydroE::Patch_vector_length:0.1998,HydroE::Patch_team_size:0.4995]
+  querying time per call: 0.0126523s
+\textcolor{hlOrange}{Simulated Annealing: New best! 0.0126523 k: 29 kmax: 324 temp: 0.0895062,}
+\textcolor{hlOrange}{HydroE::Patch_team_size: 0.499500, HydroE::Patch_vector_length: 0.199800}
 \end{semiverbatim}}
 \end{beamerboxesrounded}
 
 \vspace{0.1em}
 \scriptsize
-\begin{itemize}\itemsep0.12em
+\begin{itemize}\itemsep0.03em
     \item The \texttt{-tv} line contains two search coordinates: one for \texttt{vector\_length}, one for \texttt{team\_size}.
     \item These are normalized coordinates in \texttt{[0,1)}, not final integer Kokkos values.
-    \item Kokkos maps \texttt{vector\_length} to legal CUDA values \texttt{\{1, 2, 4, 8, 16, 32\}}, and maps \texttt{team\_size} to a legal team size for this kernel and the selected \texttt{vector\_length}.
+    \item Kokkos maps \texttt{vector\_length} to legal CUDA values \texttt{\{1, 2, 4, 8, 16, 32\}}, and maps \texttt{team\_size} to a legal team size for \texttt{HydroE::Patch} and the selected \texttt{vector\_length}.
     \item The log stores the normalized coordinates only.
-    \item Best time drops from \texttt{2.1286e-05 s} to \texttt{1.0684e-05 s} per call, about \textbf{2.0x faster}.
+    \item Best time drops from \texttt{0.145121 s} to \texttt{0.0126523 s} per call, about \textbf{11.5x faster !!!} But there is some issues...
 \end{itemize}
 \end{frame}
 
@@ -544,15 +547,16 @@ Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"Hydro
 \texttt{\scriptsize apex\_converged\_tuning.0.yaml excerpt}}
 {\ttfamily\tiny\color{termText}
 \begin{semiverbatim}
-Output_3:
-  name: GhostCommunicator_partial_blocks::\textcolor{green!70!black}{list_send_cells_vector_length}
+Output_10:
+  name: \textcolor{green!70!black}{HydroE::Patch_vector_length}
   info.candidates: \textcolor{hotspotBlue}{[lower: 0, upper: 0.999, step: 0.04995]}
-Output_4:
-  name: GhostCommunicator_partial_blocks::\textcolor{green!70!black}{list_send_cells_team_size}
+Output_11:
+  name: \textcolor{green!70!black}{HydroE::Patch_team_size}
   info.candidates: \textcolor{hotspotBlue}{[lower: 0, upper: 0.999, step: 0.04995]}
-Context_2:
-  Name: "[kokkos.kernel_name:GhostCommunicator_partial_blocks::list_send_cells,
-         kokkos.kernel_type:parallel_for, ...]"
+Context_0:
+  Name: "[kokkos.kernel_name:\textcolor{patchBlue}{HydroE::Patch},
+         kokkos.kernel_type:parallel_for,
+         tree_node:Kokkos::parallel_for [Cuda, Dev:0] \textcolor{patchBlue}{HydroE::Patch}]"
   Strategy: "simulated annealing"
 \textcolor{hlOrange}{  Converged: false}
 \end{semiverbatim}}
@@ -560,23 +564,23 @@ Context_2:
 
 \vspace{0.1em}
 \scriptsize
-\begin{itemize}\itemsep0.12em
-    \item \textcolor{green!70!black}{\texttt{Output\_3}} is the normalized axis for \texttt{vector\_length}, \textcolor{green!70!black}{\texttt{Output\_4}} is the normalized axis for \texttt{team\_size}.
-    \item Both outputs use the same \textcolor{hotspotBlue}{\texttt{[lower: 0, upper: 0.999, step: 0.04995]}} declaration because APEX stores normalized search axes, not final Kokkos sizes.
-    \item The YAML records that this kernel has two tuning knobs, \textcolor{green!70!black}{\texttt{vector\_length}} and \textcolor{green!70!black}{\texttt{team\_size}}, and one tuning context.
-    \item The cache is not settled yet, the context still ends with \textcolor{hlOrange}{\texttt{Converged: false.}}
-    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{So the next Dyablo run cannot yet reload one final winning configuration from this YAML. This context will be tuned again, without resuming a partial search state from the cache.}}}
+\begin{itemize}\itemsep0.08em
+    \item \textcolor{green!70!black}{\texttt{Output\_10}} is the normalized axis for \texttt{HydroE::Patch\_vector\_length}, and \textcolor{green!70!black}{\texttt{Output\_11}} is the normalized axis for \texttt{HydroE::Patch\_team\_size}.
+    \item Both outputs use the same \textcolor{hotspotBlue}{\texttt{[lower: 0, upper: 0.999, step: 0.04995]}} declaration because APEX stores normalized search coordinates, not final Kokkos values.
+    \item \textcolor{patchBlue}{\texttt{Context\_0}} is the \texttt{HydroE::Patch} tuning context associated with these two knobs.
+    \item The cache is still incomplete for this kernel: \textcolor{hlOrange}{\texttt{Converged: false}}.
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{The next Dyablo run cannot reload one final winning configuration for \texttt{HydroE::Patch} from this YAML yet. APEX will tune this context again.}}}
 \end{itemize}
 \end{frame}
 
-\begin{frame}[t]{Same APEX key, different workloads}
+\begin{frame}[t]{Same APEX context key, different workloads}
 \scriptsize
 {\color{ceaGreen}\textbf{APEX distinguishes contexts with \texttt{kernel\_name}, \texttt{kernel\_type}, and \texttt{tree\_node}. It does not distinguish them with the current kernel size.}}
 
 \vspace{0.18em}
 \begin{columns}[T,onlytextwidth]
 \column{0.35\textwidth}
-\begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{APEX key}
+\begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{APEX context key}
 \tiny
 \begin{itemize}\itemsep0.18em
     \item \texttt{kernel\_name}
@@ -586,10 +590,10 @@ Context_2:
 \end{beamerboxesrounded}
 
 \vspace{0.22em}
-\begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{Not in the key}
+\begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{Not in the context key}
 \tiny
 \begin{itemize}\itemsep0.18em
-    \item \texttt{ghostmap.send\_iOcts.size()}
+    \item \texttt{nbOcts}
     \item current work distribution
     \item runtime regime changes
 \end{itemize}
@@ -599,7 +603,7 @@ Context_2:
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{What this means in Dyablo}
 \tiny
 \begin{itemize}\itemsep0.2em
-    \item Two calls to \texttt{list\_send\_cells} with different \texttt{ghostmap.send\_iOcts.size()} still hit the same APEX context.
+    \item Two calls to \texttt{HydroE::Patch} with different \texttt{number of octants} still hit the same APEX context.
     \item Best \textcolor{green!70!black}{\texttt{team\_size}} and \textcolor{green!70!black}{\texttt{vector\_length}} can change with size, backend, GPU, and workload.
     \item One YAML entry can therefore mix several regimes and end up as a compromise.
     \item If one run stops with \texttt{Converged: false}, the next run does not resume that unfinished search, it starts tuning that context again and may revisit similar candidates.
