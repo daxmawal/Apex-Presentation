@@ -207,7 +207,7 @@ Search better Kokkos launch parameters.
 \section{2. APEX profiling on Dyablo}
 % =========================================================
 
-\begin{frame}[fragile,t]{Command line}
+\begin{frame}[fragile,t]{Apex profiling command line}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
@@ -465,14 +465,16 @@ do not reuse from YAML, a later run retunes that context
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile,t]{One Dyablo kernel tuned by APEX}
-\small
-\begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{%
+\begin{frame}[fragile,t]{One Dyablo kernel tune by APEX}
+\begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
+\textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
 \texttt{\scriptsize core/src/mpi/GhostCommunicator\_partial\_blocks.cpp}}
-\begin{lstlisting}[language=C++,basicstyle=\ttfamily\tiny,backgroundcolor=\color{white},numbers=none,frame=none,showstringspaces=false,columns=fullflexible,escapeinside={(*@}{@*)}]
+\begin{lstlisting}[language=C++,basicstyle=\ttfamily\tiny\color{termText},keywordstyle=\color{termText},stringstyle=\color{termText},commentstyle=\color{termText},identifierstyle=\color{termText},backgroundcolor=\color{termBg},numbers=none,frame=none,showstringspaces=false,columns=fullflexible,escapeinside={(*@}{@*)}]
 Kokkos::parallel_for("GhostCommunicator_partial_blocks::list_send_cells",
   (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::TeamPolicy<>(}}@*)(*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{ghostmap.send_iOcts.size(), Kokkos::AUTO, }}@*)(*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::AUTO}}@*)(*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{)}}@*),
-  KOKKOS_LAMBDA((*@{\color{black}\ttfamily\tiny \detokenize{const}}@*) Kokkos::TeamPolicy<>::member_type& team)
+  KOKKOS_LAMBDA(const Kokkos::TeamPolicy<>::member_type& team)
 {
   uint32_t iOct = team.league_rank();
   GhostMap_t::CellMask facemask = ghostmap.send_cell_masks(iOct);
@@ -603,6 +605,76 @@ Context_2:
 \end{itemize}
 \end{beamerboxesrounded}
 \end{columns}
+\end{frame}
+
+\begin{frame}[fragile,t]{One kernel, different workload sizes}
+\begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
+\textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
+\texttt{\scriptsize core/src/mpi/GhostCommunicator\_partial\_blocks.cpp}}
+\begin{lstlisting}[language=C++,basicstyle=\ttfamily\tiny\color{termText},keywordstyle=\color{termText},stringstyle=\color{termText},commentstyle=\color{termText},identifierstyle=\color{termText},backgroundcolor=\color{termBg},numbers=none,frame=none,showstringspaces=false,columns=fullflexible,escapeinside={(*@}{@*)}]
+Kokkos::parallel_for("GhostCommunicator_partial_blocks::list_send_cells",
+  Kokkos::TeamPolicy<>((*@{\textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.22pt}{\color{red!85!black}\bfseries\ttfamily\tiny \detokenize{ghostmap.send_iOcts.size()}}}@*), Kokkos::AUTO, Kokkos::AUTO),
+  KOKKOS_LAMBDA(const Kokkos::TeamPolicy<>::member_type& team)
+{
+  uint32_t iOct = team.league_rank();
+  GhostMap_t::CellMask facemask = ghostmap.send_cell_masks(iOct);
+  uint32_t iCell_begin = offset_iOct(iOct);
+  uint32_t current_send_iOct = ghostmap.send_iOcts(iOct);
+
+  Kokkos::parallel_for(Kokkos::TeamVectorRange(team, facemask_count(facemask)),
+    [&](uint32_t i) {
+      send_iOct(iCell_begin + i) = current_send_iOct;
+      send_iCell(iCell_begin + i) = facemask_iCells(facemask, i);
+    });
+});
+\end{lstlisting}
+\end{beamerboxesrounded}
+\vspace{0.1em}
+{\scriptsize
+If \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.12pt}{\textcolor{red!80!black}{\texttt{ghostmap.send\_iOcts.size()}}} varies a lot, the kernel workload changes too, but APEX still treats these launches as one context and compares candidate configurations across them.}
+\end{frame}
+
+% =========================================================
+\section{4. APEX intrusive auto-tuning}
+% =========================================================
+
+\begin{frame}[fragile,t]{Intrusive auto-tuning: split one context into many}
+\begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
+\textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
+\texttt{\scriptsize core/src/mpi/GhostCommunicator\_partial\_blocks.cpp}}
+\begin{lstlisting}[language=C++,basicstyle=\ttfamily\tiny\color{termText},keywordstyle=\color{termText},stringstyle=\color{termText},commentstyle=\color{termText},identifierstyle=\color{termText},backgroundcolor=\color{termBg},numbers=none,frame=none,showstringspaces=false,columns=fullflexible,escapeinside={(*@}{@*)}]
+(*@{\color{green!70!black}\ttfamily\tiny \detokenize{const auto send_iOct_count = ghostmap.send_iOcts.size();}}@*)
+(*@{\color{termText!45!termBg}\ttfamily\tiny \detokenize{// split this kernel into 4 possible APEX tuning contexts}}@*)
+(*@{\color{green!70!black}\ttfamily\tiny \detokenize{const char* list_send_cells_label =}}@*)
+  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{(send_iOct_count < 512)   ? "GhostCommunicator_partial_blocks::list_send_cells_small" :}}@*)
+  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{(send_iOct_count < 4096)  ? "GhostCommunicator_partial_blocks::list_send_cells_medium" :}}@*)
+  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{(send_iOct_count < 32768) ? "GhostCommunicator_partial_blocks::list_send_cells_large" :}}@*)
+  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{                            "GhostCommunicator_partial_blocks::list_send_cells_xlarge";}}@*)
+
+Kokkos::parallel_for((*@{\color{green!70!black}\ttfamily\tiny \detokenize{list_send_cells_label}}@*),
+  (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::TeamPolicy<>(}}@*)(*@{\color{green!70!black}\ttfamily\tiny \detokenize{send_iOct_count}}@*)(*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{, Kokkos::AUTO, Kokkos::AUTO)}}@*),
+  KOKKOS_LAMBDA(const Kokkos::TeamPolicy<>::member_type& team)
+{
+  uint32_t iOct = team.league_rank();
+  GhostMap_t::CellMask facemask = ghostmap.send_cell_masks(iOct);
+  uint32_t iCell_begin = offset_iOct(iOct);
+  uint32_t current_send_iOct = ghostmap.send_iOcts(iOct);
+
+  (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::parallel_for(Kokkos::TeamVectorRange(team, facemask_count(facemask)),}}@*)
+    [&](uint32_t i)
+  {
+    DYABLO_ASSERT_KOKKOS_DEBUG((iCell_begin + i) < total_cell_count,
+      "GhostCommunicator_partial_blocks::list_cells out of bounds ");
+    send_iOct(iCell_begin + i) = current_send_iOct;
+    send_iCell(iCell_begin + i) = facemask_iCells(facemask, i);
+  });
+});
+\end{lstlisting}
+\end{beamerboxesrounded}
 \end{frame}
 
 % =========================================================
