@@ -195,8 +195,8 @@ Search for better execution parameters.
 \vspace{0.5em}
 \begin{itemize}\itemsep0.3em
     \item Reacts to Kokkos tuning requests
-    \item Explores candidate configurations
-    \item Keeps and reuses the best ones
+    \item Explores candidate configurations online
+    \item Reuses converged configurations and can cache them in YAML
 \end{itemize}
 \end{beamerboxesrounded}
 \end{frame}
@@ -229,7 +229,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \begin{itemize}\itemsep0.06em
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{KOKKOS\_TOOLS\_LIBS=...}}} loads \texttt{libapex.so} as the Kokkos tool.
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_SCREEN\_OUTPUT=1}}} prints the summary in the terminal.
-    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}}} forces synchronization at profiling points.
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}}} asks Kokkos to fence after kernel launches for more reliable timings.
     \item The last five variables enable CUDA activity tracing, CUDA counters, kernel details, and NVML GPU metrics.
 \end{itemize}
 \end{frame}
@@ -239,7 +239,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize APEX screen output (truncated)}}
+\texttt{\scriptsize Dyablo and APEX screen output (truncated)}}
 \begin{lstlisting}[style=terminal,basicstyle=\ttfamily\scriptsize\color{termText}]
 APEX Version: -bd4b707-fix/cuda-nvml-gpu-timers
 KOKKOS CONFIG
@@ -269,7 +269,7 @@ cudaSetDevice                   :114245   0.00    7.68
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize APEX hierarchical regions}}
+\texttt{\scriptsize Dyablo timer hierarchy exported through Kokkos regions}}
 {\ttfamily\tiny\color{termText}
 \begin{semiverbatim}
 Total                     time (CPU) :    49.526 s (100.00%) , (GPU) :    49.525 s (100.00%)
@@ -296,6 +296,9 @@ Total                     time (CPU) :    49.526 s (100.00%) , (GPU) :    49.525
 \end{semiverbatim}}
 \end{beamerboxesrounded}
 \vspace{0.2em}
+{\scriptsize This hierarchy is produced by Dyablo's own timers. APEX can observe the same structure because Dyablo exports these phases through \texttt{Kokkos::Profiling::pushRegion()/popRegion()}.}
+
+\vspace{0.1em}
 {\scriptsize In this presentation, hotspots are highlighted in \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\textcolor{hlOrange}{orange}}}.}
 \end{frame}
 
@@ -359,13 +362,13 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{KOKKOS\_TUNE\_INTERNALS=1}}} asks Kokkos to expose internal tuners.
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING=1}}} enables the APEX tuner.
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING\_POLICY=simulated\_annealing}}} selects the search strategy.
-    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING\_WINDOW=5}}} means that each candidate is evaluated over a window of 5 observations before APEX updates its search state.
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING\_WINDOW=5}}} requires at least 5 observations for one context before APEX triggers a tuning update.
 \end{itemize}
 \end{frame}
 
 \begin{frame}[t]{How APEX auto-tuning works}
 \scriptsize
-{\color{ceaGreen}\textbf{APEX learns online across repeated visits to the same context during Dyablo run.}}
+{\color{ceaGreen}\textbf{APEX learns online across repeated visits to the same context during a Dyablo run.}}
 
 \vspace{0.1em}
 \begin{columns}[T,onlytextwidth]
@@ -391,17 +394,17 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \node[lanehdr] at (7.1,1.08) {APEX};
 
 \node[stage, fill=hotspotBlue!12, draw=hotspotBlue!80!black] (dy1) at (1.85,0.2)
-  {\textbf{1. Invocation}\\same tunable Kokkos call site reached};
+  {\textbf{1. Invocation}\\same tunable Kokkos execution context reached};
 \node[stage, fill=ceaGreen!12, draw=ceaGreen] (ap1) at (7.1,0.2)
   {\textbf{2. Request}\\context and tunable variables sent to APEX};
 \node[stage, fill=orange!15, draw=orange!80!black] (ap2) at (7.1,-1.6)
-  {\textbf{3. Cache/Candidate}\\reuse YAML tuning for this context, or choose a candidate};
+  {\textbf{3. Cache/Candidate}\\reuse cached YAML tuning when available, or choose a candidate};
 \node[stage, fill=red!8, draw=red!70!black] (dy2) at (1.85,-1.6)
   {\textbf{4. Kernel Runs}\\one execution with the chosen parameters};
 \node[stage, fill=black!4, draw=black!60] (ap3) at (7.1,-3.3)
-  {\textbf{5. Update State}\\record observation; after each window, continue or stop};
+  {\textbf{5. Update State}\\record observations, once enough are collected, update search state};
 \node[stage, fill=hotspotBlue!12, draw=hotspotBlue!80!black] (dy3) at (1.85,-4.7)
-  {\textbf{6. Later Visit}\\same call site hit again later in the run};
+  {\textbf{6. Later Visit}\\same execution context hit again later in the run};
 \node[decision] (conv) at (6.00,-4.9) {Converged?};
 \node[cachebox] (yaml) at (8.4,-4.9)
   {\textbf{YAML cache}\\write stable tuning};
@@ -424,17 +427,19 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Context}
 \tiny
 \raggedright
-A context is one tunable Kokkos call site.
+A context is one tunable Kokkos execution context.
 
 \vspace{0.08em}
-Here it is identified by \texttt{kernel name}, \texttt{kernel type}, and \texttt{tree node}.
+Here it is identified by \texttt{kernel name}, \texttt{kernel type}, and the current exported \texttt{region} in the APEX \texttt{tree node}.
 \end{beamerboxesrounded}
 
 \vspace{0.28em}
 \begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{Tuned Knobs}
 \tiny
 \raggedright
-\texttt{team\_size}, \texttt{vector\_length}, \texttt{tile\_0}, \texttt{tile\_1}, \texttt{tile\_2}
+Typical Kokkos internal knobs:\\
+\texttt{team\_size}, \texttt{vector\_length}\\
+\texttt{tile\_size\_0}, \texttt{tile\_size\_1}, \texttt{tile\_size\_2}
 \end{beamerboxesrounded}
 
 \vspace{0.18em}
@@ -442,15 +447,15 @@ Here it is identified by \texttt{kernel name}, \texttt{kernel type}, and \texttt
 \tiny
 \raggedright
 \texttt{window = 5}\\
-update the candidate after 5 observations
+allow a tuning update after at least 5 observations
 
 \vspace{0.05em}
 \texttt{Converged = true}\\
-reuse later in the run and across runs
+reuse later in the run and from YAML cache in later runs
 
 \vspace{0.05em}
 \texttt{Converged = false}\\
-later Dyablo runs may revisit the same APEX configuration search space, and the search may never converge
+not reused from the YAML cache, a later run starts tuning that context again
 \end{beamerboxesrounded}
 \end{columns}
 \end{frame}
