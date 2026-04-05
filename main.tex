@@ -193,11 +193,12 @@ Aggregate timing and counter statistics.
 \begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Tuner}
 \small
 Search better Kokkos launch parameters.
-\vspace{0.5em}
-\begin{itemize}\itemsep0.3em
+\vspace{0.35em}
+\begin{itemize}\itemsep0.22em
     \item Handles Kokkos tuning requests
     \item Tries candidate configurations online
-    \item Reuses converged configurations and can write them to YAML
+    \item Reuses stable configurations and can write them to YAML
+    \item If YAML has no final configuration yet, the next Dyablo run retunes that context
 \end{itemize}
 \end{beamerboxesrounded}
 \end{frame}
@@ -560,8 +561,48 @@ Context_2:
     \item Both outputs use the same \textcolor{hotspotBlue}{\texttt{[lower: 0, upper: 0.999, step: 0.04995]}} declaration because APEX stores normalized search axes, not final Kokkos sizes.
     \item The YAML records that this kernel has two tuning knobs, \textcolor{green!70!black}{\texttt{vector\_length}} and \textcolor{green!70!black}{\texttt{team\_size}}, and one tuning context.
     \item The cache is not settled yet, the context still ends with \textcolor{hlOrange}{\texttt{Converged: false.}}
-\item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{So the next Dyablo run cannot yet reload one final winning configuration from this YAML, and APEX will start tuning this context again from scratch.}}}
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{So the next Dyablo run cannot yet reload one final winning configuration from this YAML. Part of the next run will replay candidates already seen in the previous one.}}}
 \end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Same APEX key, different workloads}
+\scriptsize
+{\color{ceaGreen}\textbf{APEX distinguishes contexts with \texttt{kernel\_name}, \texttt{kernel\_type}, and \texttt{tree\_node}. It does not distinguish them with the current kernel size.}}
+
+\vspace{0.18em}
+\begin{columns}[T,onlytextwidth]
+\column{0.35\textwidth}
+\begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{APEX key}
+\tiny
+\begin{itemize}\itemsep0.18em
+    \item \texttt{kernel\_name}
+    \item \texttt{kernel\_type}
+    \item exported \texttt{tree\_node}
+\end{itemize}
+\end{beamerboxesrounded}
+
+\vspace{0.22em}
+\begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{Not in the key}
+\tiny
+\begin{itemize}\itemsep0.18em
+    \item \texttt{ghostmap.send\_iOcts.size()}
+    \item current work distribution
+    \item runtime regime changes
+\end{itemize}
+\end{beamerboxesrounded}
+
+\column{0.62\textwidth}
+\begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{What this means in Dyablo}
+\tiny
+\begin{itemize}\itemsep0.2em
+    \item Two calls to \texttt{list\_send\_cells} with different \texttt{ghostmap.send\_iOcts.size()} still hit the same APEX context.
+    \item Best \textcolor{green!70!black}{\texttt{team\_size}} and \textcolor{green!70!black}{\texttt{vector\_length}} can change with size, backend, GPU, and workload.
+    \item One YAML entry can therefore mix several regimes and end up as a compromise.
+    \item If one run stops with \texttt{Converged: false}, the next run does not resume that unfinished search, it repeats part of the same exploration.
+    \item With short runs, this context may keep getting retuned without ever settling on one stable setting.
+\end{itemize}
+\end{beamerboxesrounded}
+\end{columns}
 \end{frame}
 
 % =========================================================
