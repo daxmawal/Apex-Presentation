@@ -207,7 +207,7 @@ Search better Kokkos launch parameters.
 \section{2. APEX profiling on Dyablo}
 % =========================================================
 
-\begin{frame}[fragile,t]{Apex profiling command line}
+\begin{frame}[fragile,t]{APEX profiling command line}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
@@ -367,7 +367,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{KOKKOS\_TUNE\_INTERNALS=1}}} asks Kokkos to expose internal tuners.
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING=1}}} enables the APEX tuner.
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING\_POLICY=...}}} selects the search strategy.
-    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING\_WINDOW=5}}} requires at least 5 observations for one context before APEX triggers a tuning update.
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_TUNING\_WINDOW=5}}} means APEX evaluates each candidate configuration 5 times before updating the search state.
 \end{itemize}
 \end{frame}
 
