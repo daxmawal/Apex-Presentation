@@ -785,7 +785,7 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 \appendix
 \section{Appendix}
 
-\begin{frame}[t]{How Kokkos internal auto-tuning works}
+\begin{frame}[t,shrink=7]{How Kokkos internal auto-tuning works}
 \scriptsize
 
 \begin{center}
@@ -836,17 +836,17 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 
 \node[dotK] (d2) at (0,-1.40) {2};
 \node[cardK, anchor=east] (s2) at (-0.45,-1.40)
-  {\textbf{Expose tunable outputs}\\declare legal axes such as normalized \texttt{team\_size} and \texttt{vector\_length}.};
+  {\textbf{Send legal space + defaults}\\Kokkos declares the legal outputs and calls \texttt{request\_output\_values(...)} with default values already filled in.};
 \draw[link] (d2) -- (s2.east);
 
 \node[dotA] (d3) at (0,-2.45) {3};
 \node[cardA, anchor=west] (s3) at (0.45,-2.45)
-  {\textbf{Choose candidate}\\reuse cache or explore the next point with the active APEX search strategy.};
+  {\textbf{Overwrite output buffer}\\APEX picks the next candidate inside the declared set/range and rewrites the tunable outputs it wants to change.};
 \draw[link] (d3) -- (s3.west);
 
 \node[dotK] (d4) at (0,-3.50) {4};
 \node[cardK, anchor=east] (s4) at (-0.45,-3.50)
-  {\textbf{Remap to a legal policy}\\convert normalized outputs back to executable Kokkos policy parameters.};
+  {\textbf{Read back and remap}\\Kokkos reads the returned values and, for internal tuners, converts normalized coordinates back to concrete legal policy parameters.};
 \draw[link] (d4) -- (s4.east);
 
 \node[dotE] (d5) at (0,-4.55) {5};
@@ -874,6 +874,10 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 
 \vspace{0.12em}
 \textcolor{ceaGreen}{\textbf{APEX}} keys the context, reuses cache or explores, then updates the search from measured runtime.
+
+\vspace{0.12em}
+\textbf{Protocol}\\
+Kokkos sends metadata + default outputs. APEX may overwrite the output values. Kokkos then executes with the returned candidate.
 \end{beamerboxesrounded}
 
 \vspace{0.18em}
@@ -886,9 +890,12 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 
 \vspace{0.10em}
 \textbf{Typical internal knobs}\\
-\texttt{TeamPolicy}: \texttt{team\_size}, \texttt{vector\_length}\\
-\texttt{MDRangePolicy}: \texttt{tile\_size\_i}\\
+\texttt{TeamPolicy}: normalized \texttt{team\_size}, \texttt{vector\_length}\\
+\texttt{MDRangePolicy}: normalized \texttt{tile\_size\_i}\\
 \texttt{RangePolicy}: occupancy target
+
+\vspace{0.10em}
+For \texttt{TeamPolicy} and \texttt{MDRangePolicy}, APEX usually sees search coordinates, not final CUDA/OpenMP launch parameters.
 \end{beamerboxesrounded}
 \end{columns}
 \end{frame}
