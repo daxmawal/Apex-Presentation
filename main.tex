@@ -197,8 +197,8 @@ Search better Kokkos launch parameters.
 \begin{itemize}\itemsep0.22em
     \item Handles Kokkos tuning requests
     \item Tries candidate configurations online
-    \item Reuses stable configurations and can write them to YAML
-    \item If YAML has no final configuration yet, the next Dyablo run retunes that context
+    \item Reuses stable configurations and can write them to yaml
+    \item If yaml has no final configuration yet, the next Dyablo run retunes that context
 \end{itemize}
 \end{beamerboxesrounded}
 \end{frame}
@@ -403,7 +403,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \node[stage, fill=ceaGreen!12, draw=ceaGreen] (ap1) at (7.1,0.2)
   {\textbf{2. Request}\\context and tunable variables sent to APEX};
 \node[stage, fill=orange!15, draw=orange!80!black] (ap2) at (7.1,-1.6)
-  {\textbf{3. Cache/Candidate}\\reuse cached YAML tuning when available, or choose a candidate};
+  {\textbf{3. Cache/Candidate}\\reuse cached yaml tuning when available, or choose a candidate};
 \node[stage, fill=red!8, draw=red!70!black] (dy2) at (1.85,-1.6)
   {\textbf{4. Kernel Runs}\\one execution with the chosen parameters};
 \node[stage, fill=black!4, draw=black!60] (ap3) at (7.1,-3.3)
@@ -412,7 +412,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
   {\textbf{6. Later Visit}\\same execution context hit again later in the run};
 \node[decision] (conv) at (6.00,-4.9) {Converged?};
 \node[cachebox] (yaml) at (8.4,-4.9)
-  {\textbf{YAML cache}\\write stable tuning};
+  {\textbf{yaml cache}\\write stable tuning};
 
 \draw[arr] (dy1.east) -- (ap1.west);
 \draw[arr] (ap1) -- (ap2);
@@ -426,7 +426,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \end{adjustbox}
 
 \vspace{0.05em}
-{\tiny\color{black!75}\textbf{Convergence:} once APEX stops searching for a context, it reuses that stable configuration and can write it to the YAML cache.}
+{\tiny\color{black!75}\textbf{Convergence:} once APEX stops searching for a context, it reuses that stable configuration and can write it to the yaml cache.}
 
 \column{0.35\textwidth}
 \begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Context}
@@ -456,11 +456,11 @@ update tuning state after at least 5 observations
 
 \vspace{0.05em}
 \texttt{Converged = true}\\
-reuse later in the run and from YAML in later runs
+reuse later in the run and from yaml in later runs
 
 \vspace{0.05em}
 \texttt{Converged = false}\\
-do not reuse from YAML, a later run retunes that context
+do not reuse from yaml, a later run retunes that context
 \end{beamerboxesrounded}
 \end{columns}
 \end{frame}
@@ -539,7 +539,7 @@ Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"Hydro
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile,t]{APEX YAML cache after the run}
+\begin{frame}[fragile,t]{APEX yaml cache after the run}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
@@ -569,7 +569,7 @@ Context_0:
     \item Both outputs use the same \textcolor{hotspotBlue}{\texttt{[lower: 0, upper: 0.999, step: 0.04995]}} declaration because APEX stores normalized search coordinates, not final Kokkos values.
     \item \textcolor{patchBlue}{\texttt{Context\_0}} is the \texttt{HydroE::Patch} tuning context associated with these two knobs.
     \item The cache is still incomplete for this kernel: \textcolor{hlOrange}{\texttt{Converged: false}}.
-    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{The next Dyablo run cannot reload one final winning configuration for \texttt{HydroE::Patch} from this YAML yet. APEX will tune this context again.}}}
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{The next Dyablo run cannot reload one final winning configuration for \texttt{HydroE::Patch} from this yaml yet. APEX will tune this context again.}}}
 \end{itemize}
 \end{frame}
 
@@ -605,7 +605,7 @@ Context_0:
 \begin{itemize}\itemsep0.2em
     \item Two calls to \texttt{HydroE::Patch} with different \texttt{number of octants} still hit the same APEX context.
     \item Best \textcolor{green!70!black}{\texttt{team\_size}} and \textcolor{green!70!black}{\texttt{vector\_length}} can change with size, backend, GPU, and workload.
-    \item One YAML entry can therefore mix several regimes and end up as a compromise.
+    \item One yaml entry can therefore mix several regimes and end up as a compromise.
     \item If one run stops with \texttt{Converged: false}, the next run does not resume that unfinished search, it starts tuning that context again and may revisit similar candidates.
     \item With short runs, this context may keep getting retuned without ever settling on one stable setting.
 \end{itemize}
@@ -718,9 +718,21 @@ if (tuning) {
 {\tiny Branch: \href{https://github.com/daxmawal/Dyablo-apex/tree/intrusive_apex_hydroe_patch}{\texttt{daxmawal/Dyablo-apex}, \texttt{intrusive\_apex\_hydroe\_patch}}.}
 \end{frame}
 
+\begin{frame}[t]{APEX converged tuning trace for HydroE::Patch}
+\end{frame}
+
+\begin{frame}[t]{APEX converged yaml cache after the run}
+\end{frame}
+
+\begin{frame}[t]{Performance comparison}
+\end{frame}
+
 % =========================================================
 \section*{Conclusion}
 % =========================================================
+
+\begin{frame}[t]{Conclusion}
+\end{frame}
 
 \begin{frame}[fragile]
   \vfill
