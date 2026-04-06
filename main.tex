@@ -267,7 +267,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \end{semiverbatim}}
 \end{beamerboxesrounded}
 \vspace{0.2em}
-{\scriptsize \textcolor{hlOrange}{Dyablo timers} exported through regions, plus \textcolor{hotspotBlue}{APEX} counters and CPU timers. In this run, \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{patchBlue}{\texttt{HydroE::Patch}}} is already the dominant kernel inside \texttt{HyperbolicUpdate\_euler}.}
+{\scriptsize \textcolor{hlOrange}{Dyablo timers} exported through regions, plus \textcolor{hotspotBlue}{APEX} counters and CPU timers. In this run, \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{patchBlue}{\texttt{HydroE::Patch}}} is already the dominant kernel inside \texttt{HyperbolicUpdate\_euler}. For the rest of this presentation, we will focus on \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{patchBlue}{\texttt{HydroE::Patch}}}.}
 \end{frame}
 
 \begin{frame}[fragile,t]{APEX sees Dyablo's timer hierarchy}
@@ -377,7 +377,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 
 \vspace{0.1em}
 \begin{columns}[T,onlytextwidth]
-\column{0.62\textwidth}
+\column{0.59\textwidth}
 \centering
 \begin{adjustbox}{max width=\linewidth}
 \begin{tikzpicture}[
@@ -599,7 +599,7 @@ Context_0:
 \end{itemize}
 \end{beamerboxesrounded}
 
-\column{0.62\textwidth}
+\column{0.56\textwidth}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{What this means in Dyablo}
 \tiny
 \begin{itemize}\itemsep0.2em
@@ -785,7 +785,7 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 \appendix
 \section{Appendix}
 
-\begin{frame}[t,shrink=7]{How Kokkos internal auto-tuning works}
+\begin{frame}[t,shrink=5]{How Kokkos internal auto-tuning works}
 \scriptsize
 
 \begin{center}
@@ -805,7 +805,7 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 
 \vspace{0.05em}
 \begin{columns}[T,onlytextwidth]
-\column{0.66\textwidth}
+\column{0.62\textwidth}
 \centering
 \begin{adjustbox}{max width=\linewidth}
 \begin{tikzpicture}[
@@ -815,72 +815,72 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
   ownerK/.style={draw=hotspotBlue!80!black, fill=hotspotBlue!85!black, text=white, rounded corners=8pt, font=\scriptsize\bfseries, inner sep=3pt},
   ownerA/.style={draw=ceaGreen!80!black, fill=ceaGreen, text=white, rounded corners=8pt, font=\scriptsize\bfseries, inner sep=3pt},
   spine/.style={line width=1.2pt, draw=black!35},
-  cardK/.style={draw=hotspotBlue!80!black, fill=hotspotBlue!8, rounded corners=9pt, line width=0.9pt, text width=3.65cm, minimum height=0.92cm, align=left, font=\tiny, inner sep=4pt},
-  cardA/.style={draw=ceaGreen!80!black, fill=ceaGreen!8, rounded corners=9pt, line width=0.9pt, text width=3.65cm, minimum height=0.92cm, align=left, font=\tiny, inner sep=4pt},
-  cardExec/.style={draw=hlOrange!85!black, fill=hlOrange!10, rounded corners=9pt, line width=0.9pt, text width=3.65cm, minimum height=0.92cm, align=left, font=\tiny, inner sep=4pt},
+  cardK/.style={draw=hotspotBlue!80!black, fill=hotspotBlue!8, rounded corners=9pt, line width=0.9pt, text width=4.05cm, minimum height=0.92cm, align=left, font=\fontsize{5.4}{6.0}\selectfont, inner sep=4pt},
+  cardA/.style={draw=ceaGreen!80!black, fill=ceaGreen!8, rounded corners=9pt, line width=0.9pt, text width=4.05cm, minimum height=0.92cm, align=left, font=\fontsize{5.4}{6.0}\selectfont, inner sep=4pt},
+  cardExec/.style={draw=hlOrange!85!black, fill=hlOrange!10, rounded corners=9pt, line width=0.9pt, text width=4.05cm, minimum height=0.92cm, align=left, font=\fontsize{5.4}{6.0}\selectfont, inner sep=4pt},
   dotK/.style={circle, fill=hotspotBlue!80!black, text=white, font=\scriptsize\bfseries, minimum size=5.5mm, inner sep=0pt},
   dotA/.style={circle, fill=ceaGreen, text=white, font=\scriptsize\bfseries, minimum size=5.5mm, inner sep=0pt},
   dotE/.style={circle, fill=hlOrange!85!black, text=white, font=\scriptsize\bfseries, minimum size=5.5mm, inner sep=0pt},
   link/.style={line width=0.9pt, draw=black!40},
   replay/.style={-Latex, line width=1pt, draw=hlOrange!85!black, dashed}
 ]
-\node[ownerK] at (-2.7,0.65) {Kokkos runtime};
-\node[ownerA] at (2.7,0.65) {APEX tool};
+\node[ownerK] at (-2.95,0.65) {Kokkos runtime};
+\node[ownerA] at (2.95,0.65) {APEX tool};
 
-\draw[spine] (0,0.15) -- (0,-5.60);
+\draw[spine] (0,0.15) -- (0,-7.05);
 
 \node[dotK] (d1) at (0,-0.35) {1};
 \node[cardK, anchor=east] (s1) at (-0.45,-0.35)
   {\textbf{Open context}\\launch begins with \texttt{kernel\_name} and \texttt{kernel\_type}.};
 \draw[link] (d1) -- (s1.east);
 
-\node[dotK] (d2) at (0,-1.40) {2};
-\node[cardK, anchor=east] (s2) at (-0.45,-1.40)
+\node[dotK] (d2) at (0,-1.95) {2};
+\node[cardK, anchor=east] (s2) at (-0.45,-1.95)
   {\textbf{Send legal space + defaults}\\Kokkos declares the legal outputs and calls \texttt{request\_output\_values(...)} with default values already filled in.};
 \draw[link] (d2) -- (s2.east);
 
-\node[dotA] (d3) at (0,-2.45) {3};
-\node[cardA, anchor=west] (s3) at (0.45,-2.45)
+\node[dotA] (d3) at (0,-3.20) {3};
+\node[cardA, anchor=west] (s3) at (0.45,-3.20)
   {\textbf{Overwrite output buffer}\\APEX picks the next candidate inside the declared set/range and rewrites the tunable outputs it wants to change.};
 \draw[link] (d3) -- (s3.west);
 
-\node[dotK] (d4) at (0,-3.50) {4};
-\node[cardK, anchor=east] (s4) at (-0.45,-3.50)
+\node[dotK] (d4) at (0,-4.45) {4};
+\node[cardK, anchor=east] (s4) at (-0.45,-4.45)
   {\textbf{Read back and remap}\\Kokkos reads the returned values and, for internal tuners, converts normalized coordinates back to concrete legal policy parameters.};
 \draw[link] (d4) -- (s4.east);
 
-\node[dotE] (d5) at (0,-4.55) {5};
-\node[cardExec, anchor=east] (s5) at (-0.45,-4.55)
+\node[dotE] (d5) at (0,-5.85) {5};
+\node[cardExec, anchor=east] (s5) at (-0.45,-5.85)
   {\textbf{Run the kernel}\\execute one launch with this concrete policy configuration.};
 \draw[link] (d5) -- (s5.east);
 
-\node[dotA] (d6) at (0,-5.60) {6};
-\node[cardA, anchor=west] (s6) at (0.45,-5.60)
-  {\textbf{Measure and update}\\record runtime, update the search state, and persist the best candidate once converged.};
+\node[dotA] (d6) at (0,-7.05) {6};
+\node[cardA, anchor=west] (s6) at (0.45,-7.05)
+  {\textbf{Accumulate window, then update}\\APEX records runtime at each visit, but only updates the search after the tuning window for this context is filled, once converged it persists the best candidate.};
 \draw[link] (d6) -- (s6.west);
 
-\draw[replay] (4.55,-5.60) -- (4.55,-0.35);
-\draw[replay] (4.55,-0.35) -- (0.35,-0.35);
-\node[anchor=west, font=\tiny, text width=1.9cm, align=left, text=hlOrange!85!black] at (4.72,-2.95)
-  {\textbf{Repeated visits to the same context} drive convergence.};
+\draw[replay] (5.00,-7.05) -- (5.00,-0.35);
+\draw[replay] (5.00,-0.35) -- (0.35,-0.35);
+\node[anchor=west, font=\tiny, text width=2.0cm, align=left, text=hlOrange!85!black] at (5.18,-3.65)
+  {\textbf{Repeated visits to the same context} fill the window and drive convergence.};
 \end{tikzpicture}
 \end{adjustbox}
 
-\column{0.31\textwidth}
+\column{0.39\textwidth}
 \begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Decision split}
 \tiny
 \raggedright
 \textcolor{hotspotBlue!80!black}{\textbf{Kokkos}} owns the tunable policy, defines the legal space, and turns normalized outputs into valid execution parameters.
 
-\vspace{0.12em}
+\vspace{0.08em}
 \textcolor{ceaGreen}{\textbf{APEX}} keys the context, reuses cache or explores, then updates the search from measured runtime.
 
-\vspace{0.12em}
+\vspace{0.08em}
 \textbf{Protocol}\\
 Kokkos sends metadata + default outputs. APEX may overwrite the output values. Kokkos then executes with the returned candidate.
 \end{beamerboxesrounded}
 
-\vspace{0.18em}
+\vspace{0.04em}
 \begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{Context and knobs}
 \tiny
 \raggedright
@@ -888,14 +888,12 @@ Kokkos sends metadata + default outputs. APEX may overwrite the output values. K
 \texttt{kokkos.kernel\_name}\\
 \texttt{kokkos.kernel\_type}
 
-\vspace{0.10em}
+\vspace{0.06em}
 \textbf{Typical internal knobs}\\
 \texttt{TeamPolicy}: normalized \texttt{team\_size}, \texttt{vector\_length}\\
 \texttt{MDRangePolicy}: normalized \texttt{tile\_size\_i}\\
 \texttt{RangePolicy}: occupancy target
 
-\vspace{0.10em}
-For \texttt{TeamPolicy} and \texttt{MDRangePolicy}, APEX usually sees search coordinates, not final CUDA/OpenMP launch parameters.
 \end{beamerboxesrounded}
 \end{columns}
 \end{frame}
