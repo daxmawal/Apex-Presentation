@@ -241,7 +241,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize Dyablo and APEX profiling.log excerpt (heavly truncated)}}
+\texttt{\scriptsize Dyablo and APEX profiling.log excerpt (heavily truncated)}}
 {\ttfamily\tiny\color{termText}
 \begin{semiverbatim}
 \textcolor{white}{APEX Version: v2.7.1-2bd7ac2c-develop}
@@ -452,7 +452,7 @@ Typical Kokkos internal knobs:\\
 \tiny
 \raggedright
 \texttt{window = 5}\\
-update Kokkos kernel tuning configuration after at least 5 observations
+update APEX search state after each candidate configuration has been evaluated 5 times
 
 \vspace{0.05em}
 \texttt{Converged = true}\\
@@ -535,7 +535,7 @@ Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"Hydro
     \item These are normalized coordinates in \texttt{[0,1)}, not final integer Kokkos values.
     \item Kokkos maps \texttt{vector\_length} to legal CUDA values \texttt{\{1, 2, 4, 8, 16, 32\}}, and maps \texttt{team\_size} to a legal team size for \texttt{HydroE::Patch} and the selected \texttt{vector\_length}.
     \item The log stores the normalized coordinates only.
-    \item Best time drops from \texttt{0.145121s} to \texttt{0.0126523s} per call, about \textbf{11.5x faster !!!} {\textcolor{red}{\textbf{But there is some issues...}}}
+    \item Best observed time in this run drops from \texttt{0.145121s} to \texttt{0.0126523s} per call, but the search has not converged yet.
 \end{itemize}
 \end{frame}
 
@@ -575,7 +575,7 @@ Context_0:
 
 \begin{frame}[t]{Same APEX context key, different workloads}
 \scriptsize
-{\color{ceaGreen}\textbf{APEX distinguishes contexts with \texttt{kernel\_name}, \texttt{kernel\_type}, and \texttt{tree\_node}. It does not distinguish them with the current kernel size.}}
+{\color{ceaGreen}\textbf{In the HydroE::Patch context shown here, the displayed APEX context key includes \texttt{kernel\_name}, \texttt{kernel\_type}, and \texttt{tree\_node}, but not \texttt{nbOcts}.}}
 
 \vspace{0.18em}
 \begin{columns}[T,onlytextwidth]
@@ -628,11 +628,11 @@ Context_0:
     Patch patch(..., team);
     auto Qpatch = patch.allocate_tmp(...);
 
-    patch.foreach_cell("HydroE::QPatch"), Qpatch, [&](CellIndex i) {
+    patch.foreach_cell("HydroE::QPatch", Qpatch, [&](CellIndex i) {
       // conservative -> primitive
     });
 
-    patch.foreach_cell("HydroE::Flux"), Uout.getShape(), [&](CellIndex i) {
+    patch.foreach_cell("HydroE::Flux", Uout.getShape(), [&](CellIndex i) {
       // slopes + reconstruction + Riemann solver
       // atomic_add on Uout
     });
@@ -711,7 +711,7 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 \scriptsize
 \begin{itemize}\itemsep0.08em
     \item Each tuning pass must restart from the same inputs and outputs, otherwise APEX measures a changing state.
-    \item Splitting \texttt{HydroE::Patch} into several APEX labels is not enough, APEX still needs repeated visits to each context.
+    \item For this intrusive replay-style experiment, each pass must restart from the same state so that APEX compares candidates on a stable workload.
     \item One short Dyablo pass per label is often too short, so the search still ends with \texttt{Converged: false}.
 \end{itemize}
 
@@ -856,7 +856,7 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 
 \node[dotA] (d6) at (0,-7.05) {6};
 \node[cardA, anchor=west] (s6) at (0.45,-7.05)
-  {\textbf{Accumulate window, then update}\\APEX records runtime at each visit, but only updates the search after the tuning window for this context is filled, once converged it persists the best candidate.};
+  {\textbf{Accumulate window, then update}\\APEX records runtime at each visit, but only updates the search once the tuning window for this context is filled. Once the context converges, it persists the best candidate.};
 \draw[link] (d6) -- (s6.west);
 
 \draw[replay] (5.00,-7.05) -- (5.00,-0.35);
