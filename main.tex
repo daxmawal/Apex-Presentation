@@ -241,7 +241,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize Dyablo and APEX profiling.log excerpt (truncated)}}
+\texttt{\scriptsize Dyablo and APEX profiling.log excerpt (heavly truncated)}}
 {\ttfamily\tiny\color{termText}
 \begin{semiverbatim}
 \textcolor{white}{APEX Version: v2.7.1-2bd7ac2c-develop}
@@ -283,7 +283,7 @@ Total                           time (CPU) :   346.719 s (100.00%) , (GPU) :   3
 | Init                          time (CPU) :     1.174 s (  0.34%) , (GPU) :     1.174 s (  0.34%)
 | | initial_conditions          time (CPU) :     1.173 s (  0.34%) , (GPU) :     1.173 s (  0.34%)
 | | other                       time (CPU) :     0.000 s (  0.00%) , (GPU) :     0.000 s (  0.00%)
-| TimeLoop                      time (CPU) :   343.129 s ( 98.96%) , (GPU) :   343.123 s ( 98.96%)
+\textcolor{hlOrange!85!black}{| TimeLoop                      time (CPU) :   343.129 s ( 98.96%) , (GPU) :   343.123 s ( 98.96%)}
 \textcolor{hlOrange}{| | AMR                         time (CPU) :   207.811 s ( 59.94%) , (GPU) :   207.808 s ( 59.94%)}
 \textcolor{hlOrange!70!white}{| | | AMR: Mark cells           time (CPU) :    59.920 s ( 17.28%) , (GPU) :    59.921 s ( 17.28%)}
 \textcolor{hlOrange!70!white}{| | | AMR: adapt                time (CPU) :    43.533 s ( 12.56%) , (GPU) :    43.628 s ( 12.58%)}
@@ -419,14 +419,14 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \draw[arr] (ap2.west) -- (dy2.east);
 \draw[arr] (dy2.east) -- (ap3.west);
 \draw[arr] (ap3.south) -- (conv.north);
-\draw[arr] (conv.east) -- node[above,font=\tiny] {yes} (yaml.west);
+\draw[arr] (conv.east) -- node[above,font=\tiny] {YES} (yaml.west);
 \draw[looparr] (conv.west) to[bend right=16] node[below,font=\tiny,text width=1.9cm,xshift=-0cm,yshift=0.45cm]
-  {no: revisit later} (dy3.east);
+  {NO, revisit later} (dy3.east);
 \end{tikzpicture}
 \end{adjustbox}
 
 \vspace{0.05em}
-{\tiny\color{black!75}\textbf{Convergence:} once APEX stops searching for a context, it reuses that stable configuration and can write it to the yaml cache.}
+{\tiny\color{black!75}\textbf{Convergence:} once the selected APEX tuning strategy declares a context converged, APEX stops exploring new configurations for that context, reapplies the best configuration, and persists it to the tuning cache/yaml.}
 
 \column{0.35\textwidth}
 \begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Context}
@@ -452,7 +452,7 @@ Typical Kokkos internal knobs:\\
 \tiny
 \raggedright
 \texttt{window = 5}\\
-update tuning state after at least 5 observations
+update Kokkos kernel tuning configuration after at least 5 observations
 
 \vspace{0.05em}
 \texttt{Converged = true}\\
@@ -535,7 +535,7 @@ Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"Hydro
     \item These are normalized coordinates in \texttt{[0,1)}, not final integer Kokkos values.
     \item Kokkos maps \texttt{vector\_length} to legal CUDA values \texttt{\{1, 2, 4, 8, 16, 32\}}, and maps \texttt{team\_size} to a legal team size for \texttt{HydroE::Patch} and the selected \texttt{vector\_length}.
     \item The log stores the normalized coordinates only.
-    \item Best time drops from \texttt{0.145121 s} to \texttt{0.0126523 s} per call, about \textbf{11.5x faster !!!} But there is some issues...
+    \item Best time drops from \texttt{0.145121s} to \texttt{0.0126523s} per call, about \textbf{11.5x faster !!!} {\textcolor{red}{\textbf{But there is some issues...}}}
 \end{itemize}
 \end{frame}
 
@@ -569,7 +569,7 @@ Context_0:
     \item Both outputs use the same \textcolor{hotspotBlue}{\texttt{[lower: 0, upper: 0.999, step: 0.04995]}} declaration because APEX stores normalized search coordinates, not final Kokkos values.
     \item \textcolor{patchBlue}{\texttt{Context\_0}} is the \texttt{HydroE::Patch} tuning context associated with these two knobs.
     \item The cache is still incomplete for this kernel: \textcolor{hlOrange}{\texttt{Converged: false}}.
-    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{The next Dyablo run cannot reload one final winning configuration for \texttt{HydroE::Patch} from this yaml yet. APEX will tune this context again.}}}
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{Because there is no convergence, the next Dyablo run cannot reload one final winning configuration for \texttt{HydroE::Patch} from this yaml, APEX will tune this context again.}}}
 \end{itemize}
 \end{frame}
 
@@ -681,7 +681,7 @@ Kokkos::parallel_for((*@{\color{green!70!black}\ttfamily\tiny \detokenize{hydro_
 
 \vspace{0.1em}
 {\scriptsize
-This intrusive split creates four distinct APEX contexts for \texttt{HydroE::Patch}, each one tied to a different \texttt{nbOcts} range. APEX then tunes more homogeneous workloads instead of one single mixed context.}
+This minor intrusive split creates four distinct APEX contexts for \texttt{HydroE::Patch}, each one tied to a different \texttt{nbOcts} range. APEX then tunes more homogeneous workloads instead of one single mixed context.}
 \end{frame}
 
 \begin{frame}[fragile,t]{Intrusive auto-tuning also needs repeated passes}
@@ -691,7 +691,7 @@ This intrusive split creates four distinct APEX contexts for \texttt{HydroE::Pat
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
 \texttt{\scriptsize pseudo-code around HydroE::Patch}}
 \begin{lstlisting}[language=C++,basicstyle=\ttfamily\tiny\color{termText},keywordstyle=\color{termText},stringstyle=\color{termText},commentstyle=\color{termText},identifierstyle=\color{termText},backgroundcolor=\color{termBg},numbers=none,frame=none,showstringspaces=false,columns=fullflexible]
-if (tuning) {
+if (Kokkos::Tools::Experimental::have_tuning_tool()) {
   for (int pass = 0; pass < tuning_passes; ++pass) {
     restore_reference_inputs();
     reset_reference_outputs();
@@ -782,7 +782,115 @@ if (tuning) {
   \vfill
 \end{frame}
 
+\appendix
+\section{Appendix}
+
 \begin{frame}[t]{How Kokkos internal auto-tuning works}
+\scriptsize
+
+\begin{center}
+\begin{tikzpicture}
+\node[
+  draw=black!15,
+  fill=black!3,
+  rounded corners=10pt,
+  inner sep=5pt,
+  text width=0.965\linewidth,
+  align=center
+] {
+\textbf{\textcolor{hotspotBlue!80!black}{Kokkos}} defines the legal tuning space and remaps normalized candidates to executable policies. \textbf{\textcolor{ceaGreen}{APEX}} only chooses the next candidate and learns from measured runtime.
+};
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.05em}
+\begin{columns}[T,onlytextwidth]
+\column{0.66\textwidth}
+\centering
+\begin{adjustbox}{max width=\linewidth}
+\begin{tikzpicture}[
+  x=1cm,
+  y=1cm,
+  >=Latex,
+  ownerK/.style={draw=hotspotBlue!80!black, fill=hotspotBlue!85!black, text=white, rounded corners=8pt, font=\scriptsize\bfseries, inner sep=3pt},
+  ownerA/.style={draw=ceaGreen!80!black, fill=ceaGreen, text=white, rounded corners=8pt, font=\scriptsize\bfseries, inner sep=3pt},
+  spine/.style={line width=1.2pt, draw=black!35},
+  cardK/.style={draw=hotspotBlue!80!black, fill=hotspotBlue!8, rounded corners=9pt, line width=0.9pt, text width=3.65cm, minimum height=0.92cm, align=left, font=\tiny, inner sep=4pt},
+  cardA/.style={draw=ceaGreen!80!black, fill=ceaGreen!8, rounded corners=9pt, line width=0.9pt, text width=3.65cm, minimum height=0.92cm, align=left, font=\tiny, inner sep=4pt},
+  cardExec/.style={draw=hlOrange!85!black, fill=hlOrange!10, rounded corners=9pt, line width=0.9pt, text width=3.65cm, minimum height=0.92cm, align=left, font=\tiny, inner sep=4pt},
+  dotK/.style={circle, fill=hotspotBlue!80!black, text=white, font=\scriptsize\bfseries, minimum size=5.5mm, inner sep=0pt},
+  dotA/.style={circle, fill=ceaGreen, text=white, font=\scriptsize\bfseries, minimum size=5.5mm, inner sep=0pt},
+  dotE/.style={circle, fill=hlOrange!85!black, text=white, font=\scriptsize\bfseries, minimum size=5.5mm, inner sep=0pt},
+  link/.style={line width=0.9pt, draw=black!40},
+  replay/.style={-Latex, line width=1pt, draw=hlOrange!85!black, dashed}
+]
+\node[ownerK] at (-2.7,0.65) {Kokkos runtime};
+\node[ownerA] at (2.7,0.65) {APEX tool};
+
+\draw[spine] (0,0.15) -- (0,-5.60);
+
+\node[dotK] (d1) at (0,-0.35) {1};
+\node[cardK, anchor=east] (s1) at (-0.45,-0.35)
+  {\textbf{Open context}\\launch begins with \texttt{kernel\_name} and \texttt{kernel\_type}.};
+\draw[link] (d1) -- (s1.east);
+
+\node[dotK] (d2) at (0,-1.40) {2};
+\node[cardK, anchor=east] (s2) at (-0.45,-1.40)
+  {\textbf{Expose tunable outputs}\\declare legal axes such as normalized \texttt{team\_size} and \texttt{vector\_length}.};
+\draw[link] (d2) -- (s2.east);
+
+\node[dotA] (d3) at (0,-2.45) {3};
+\node[cardA, anchor=west] (s3) at (0.45,-2.45)
+  {\textbf{Choose candidate}\\reuse cache or explore the next point with the active APEX search strategy.};
+\draw[link] (d3) -- (s3.west);
+
+\node[dotK] (d4) at (0,-3.50) {4};
+\node[cardK, anchor=east] (s4) at (-0.45,-3.50)
+  {\textbf{Remap to a legal policy}\\convert normalized outputs back to executable Kokkos policy parameters.};
+\draw[link] (d4) -- (s4.east);
+
+\node[dotE] (d5) at (0,-4.55) {5};
+\node[cardExec, anchor=east] (s5) at (-0.45,-4.55)
+  {\textbf{Run the kernel}\\execute one launch with this concrete policy configuration.};
+\draw[link] (d5) -- (s5.east);
+
+\node[dotA] (d6) at (0,-5.60) {6};
+\node[cardA, anchor=west] (s6) at (0.45,-5.60)
+  {\textbf{Measure and update}\\record runtime, update the search state, and persist the best candidate once converged.};
+\draw[link] (d6) -- (s6.west);
+
+\draw[replay] (4.55,-5.60) -- (4.55,-0.35);
+\draw[replay] (4.55,-0.35) -- (0.35,-0.35);
+\node[anchor=west, font=\tiny, text width=1.9cm, align=left, text=hlOrange!85!black] at (4.72,-2.95)
+  {\textbf{Repeated visits to the same context} drive convergence.};
+\end{tikzpicture}
+\end{adjustbox}
+
+\column{0.31\textwidth}
+\begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Decision split}
+\tiny
+\raggedright
+\textcolor{hotspotBlue!80!black}{\textbf{Kokkos}} owns the tunable policy, defines the legal space, and turns normalized outputs into valid execution parameters.
+
+\vspace{0.12em}
+\textcolor{ceaGreen}{\textbf{APEX}} keys the context, reuses cache or explores, then updates the search from measured runtime.
+\end{beamerboxesrounded}
+
+\vspace{0.18em}
+\begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{Context and knobs}
+\tiny
+\raggedright
+\textbf{Built-in context key}\\
+\texttt{kokkos.kernel\_name}\\
+\texttt{kokkos.kernel\_type}
+
+\vspace{0.10em}
+\textbf{Typical internal knobs}\\
+\texttt{TeamPolicy}: \texttt{team\_size}, \texttt{vector\_length}\\
+\texttt{MDRangePolicy}: \texttt{tile\_size\_i}\\
+\texttt{RangePolicy}: occupancy target
+\end{beamerboxesrounded}
+\end{columns}
 \end{frame}
 
 \end{document}
