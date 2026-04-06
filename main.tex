@@ -710,9 +710,9 @@ if (tuning) {
 \vspace{0.1em}
 \scriptsize
 \begin{itemize}\itemsep0.08em
+    \item Each tuning pass must restart from the same inputs and outputs, otherwise APEX measures a changing state.
     \item Splitting \texttt{HydroE::Patch} into several APEX labels is not enough, APEX still needs repeated visits to each context.
     \item One short Dyablo pass per label is often too short, so the search still ends with \texttt{Converged: false}.
-    \item Each tuning pass must restart from the same inputs and outputs, otherwise APEX measures a changing state.
 \end{itemize}
 
 {\tiny Branch: \href{https://github.com/daxmawal/Dyablo-apex/tree/intrusive_apex_hydroe_patch}{\texttt{daxmawal/Dyablo-apex}, \texttt{intrusive\_apex\_hydroe\_patch}}.}
@@ -780,6 +780,9 @@ if (tuning) {
   \vspace{0.8em}
   {\normalsize \email\par}
   \vfill
+\end{frame}
+
+\begin{frame}[t]{How Kokkos internal auto-tuning works}
 \end{frame}
 
 \end{document}
