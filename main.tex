@@ -829,9 +829,9 @@ HydroE kernel & Context & vector\_length & team\_size \\
 \toprule
 Metric & AUTO & APEX-guided & Speedup \\
 \midrule
-Total & 13.547 s & 5.798 s & 2.34x \\
-AMR & 2.156 s & 2.125 s & 1.01x \\
-HyperbolicUpdate\_euler & 10.921 s & 3.210 s & 3.40x \\
+Total & 6.444 s & 5.759 s & 1.12x \\
+AMR & 2.088 s & 2.099 s & 0.99x \\
+HyperbolicUpdate\_euler & 3.863 s & 3.208 s & 1.20x \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}}
@@ -841,7 +841,7 @@ HyperbolicUpdate\_euler & 10.921 s & 3.210 s & 3.40x \\
 {\scriptsize
 \begin{itemize}\itemsep0.08em
   \item \texttt{AUTO} means \texttt{HydroE::Patch} is left to plain Kokkos \texttt{AUTO} for \texttt{team\_size} and \texttt{vector\_length}.
-  \item The gain is in \texttt{HyperbolicUpdate\_euler} around \texttt{3.40x} faster, while \texttt{AMR} stays unchanged.
+  \item The main gain is in \texttt{HyperbolicUpdate\_euler} at about \texttt{1.20x}, giving about \texttt{1.12x} overall, while \texttt{AMR} stays essentially unchanged.
 \end{itemize}}
 \end{frame}
 
