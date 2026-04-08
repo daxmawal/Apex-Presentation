@@ -231,7 +231,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \begin{itemize}\itemsep0.06em
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{KOKKOS\_TOOLS\_LIBS=...}}} loads \texttt{libapex.so} as the Kokkos tool.
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_SCREEN\_OUTPUT=1}}} prints the summary in the terminal.
-    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}}} asks Kokkos to fence after kernel launches for more reliable timings.
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}}} asks Kokkos to fence after kernel launches.
     \item The last five variables enable CUDA tracing, CUDA counters, kernel details, and NVML metrics.
 \end{itemize}
 \end{frame}
@@ -335,7 +335,7 @@ CPU Timers                                           : #calls|   mean |   total
 \end{beamerboxesrounded}
 
 \vspace{0.1em}
-{\scriptsize \texttt{Counter} reports sampled host/process metrics in this run, while \texttt{CPU Timers} reports the dominant APEX timers. Here the same hierarchy seen on the previous slide also appears in the timer ranking, with \texttt{HydroE::Patch} near the top.}
+{\scriptsize \texttt{Counter} reports sampled host/process metrics in this run, while \texttt{CPU Timers} reports the APEX timers.}
 \end{frame}
 
 % =========================================================
@@ -444,7 +444,7 @@ Here it is identified by \texttt{kernel name}, \texttt{kernel type}, and the cur
 \raggedright
 Typical Kokkos internal knobs:\\
 \texttt{team\_size}, \texttt{vector\_length}\\
-\texttt{tile\_size\_0}, \texttt{tile\_size\_1}, \texttt{tile\_size\_2}
+\texttt{tile\_size}
 \end{beamerboxesrounded}
 
 \vspace{0.18em}
@@ -471,7 +471,7 @@ do not reuse from yaml, a later run retunes that context
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
 \texttt{\scriptsize core/src/hyperbolic/scheme/Hyperbolic\_euler.h}}
-\begin{lstlisting}[language=C++,basicstyle=\ttfamily\tiny\color{termText},keywordstyle=\color{termText},stringstyle=\color{termText},commentstyle=\color{termText},identifierstyle=\color{termText},backgroundcolor=\color{termBg},numbers=none,frame=none,showstringspaces=false,columns=fullflexible,escapeinside={(*@}{@*)}]
+\begin{lstlisting}[language=C++,basicstyle=\ttfamily\fontsize{4.5}{4.9}\selectfont\color{termText},keywordstyle=\color{termText},stringstyle=\color{termText},commentstyle=\color{termText},identifierstyle=\color{termText},backgroundcolor=\color{termBg},numbers=none,frame=none,showstringspaces=false,columns=fullflexible,escapeinside={(*@}{@*)}]
 Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"HydroE::Patch"}}@*),
   TeamPolicy(nbOcts, (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::AUTO()}}@*), (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::AUTO()}}@*))
     .set_scratch_size(...),
@@ -497,7 +497,7 @@ Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"Hydro
 \begin{itemize}\itemsep0.12em
     \item \textcolor{apexTuneOrange}{\texttt{HydroE::Patch}} is the single APEX-visible tuning context for this Dyablo hydro kernel.
     \item In \texttt{TeamPolicy(nbOcts, AUTO, AUTO)}, the first \textcolor{apexTuneOrange}{\texttt{AUTO}} leaves \texttt{team\_size} open, and the second leaves \texttt{vector\_length} open for APEX to tune.
-    \item \textcolor{green!70!black}{\texttt{HydroE::QPatch}} and \textcolor{green!70!black}{\texttt{HydroE::Flux}} stay fused inside that launch, so APEX tunes the outer launch policy, not the hydro algebra inside the two phases.
+    \item \textcolor{green!70!black}{\texttt{HydroE::QPatch}} and \textcolor{green!70!black}{\texttt{HydroE::Flux}} stay fused inside that launch, so APEX tunes the outer launch policy.
 \end{itemize}
 \end{frame}
 
@@ -512,8 +512,8 @@ Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"Hydro
   -cv: 2[kokkos.kernel_name:HydroE::Patch,kokkos.kernel_type:parallel_for,
         tree_node:Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch] \textcolor{termText!45!termBg}{         // -cv -> context variables}
   -tv: 2[HydroE::Patch_vector_length:0.14985,HydroE::Patch_team_size:0.0999] \textcolor{termText!45!termBg}{// -tv -> tuning variables}
-  querying time per call: 0.145121s
-\textcolor{hotspotBlue}{Simulated Annealing: New best! 0.145121 k: 1 kmax: 324 temp: 0.00308642,}
+  querying time per call: \textcolor{red!80!black}{0.145121s}
+\textcolor{hotspotBlue}{Simulated Annealing: New best! \textcolor{red!80!black}{0.145121} k: 1 kmax: 324 temp: 0.00308642,}
 \textcolor{hotspotBlue}{HydroE::Patch_team_size: 0.099900, HydroE::Patch_vector_length: 0.149850}
   ...
   -tv: 2[HydroE::Patch_vector_length:0.04995,HydroE::Patch_team_size:0.34965]
@@ -522,8 +522,8 @@ Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"Hydro
 \textcolor{hotspotBlue}{HydroE::Patch_team_size: 0.349650, HydroE::Patch_vector_length: 0.049950}
   ...
   -tv: 2[HydroE::Patch_vector_length:0.1998,HydroE::Patch_team_size:0.4995]
-  querying time per call: 0.0126523s
-\textcolor{hlOrange}{Simulated Annealing: New best! 0.0126523 k: 29 kmax: 324 temp: 0.0895062,}
+  querying time per call: \textcolor{red!80!black}{0.0126523s}
+\textcolor{hlOrange}{Simulated Annealing: New best! \textcolor{red!80!black}{0.0126523} k: 29 kmax: 324 temp: 0.0895062,}
 \textcolor{hlOrange}{HydroE::Patch_team_size: 0.499500, HydroE::Patch_vector_length: 0.199800}
 \end{semiverbatim}}
 \end{beamerboxesrounded}
@@ -534,8 +534,7 @@ Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"Hydro
     \item The \texttt{-tv} line contains two search coordinates: one for \texttt{vector\_length}, one for \texttt{team\_size}.
     \item These are normalized coordinates in \texttt{[0,1)}, not final integer Kokkos values.
     \item Kokkos maps \texttt{vector\_length} to legal CUDA values \texttt{\{1, 2, 4, 8, 16, 32\}}, and maps \texttt{team\_size} to a legal team size for \texttt{HydroE::Patch} and the selected \texttt{vector\_length}.
-    \item The log stores the normalized coordinates only.
-    \item Best observed time in this run drops from \texttt{0.145121s} to \texttt{0.0126523s} per call, but the search has not converged yet.
+    \item In this trace, the first best observed time is \texttt{\textcolor{red!80!black}{0.145121s}} per call and the current best reaches \texttt{\textcolor{red!80!black}{0.0126523s}}, but the search has not converged yet.
 \end{itemize}
 \end{frame}
 
@@ -567,7 +566,7 @@ Context_0:
 \begin{itemize}\itemsep0.08em
     \item \textcolor{green!70!black}{\texttt{Output\_10}} is the normalized axis for \texttt{HydroE::Patch\_vector\_length}, and \textcolor{green!70!black}{\texttt{Output\_11}} is the normalized axis for \texttt{HydroE::Patch\_team\_size}.
     \item Both outputs use the same \textcolor{hotspotBlue}{\texttt{[lower: 0, upper: 0.999, step: 0.04995]}} declaration because APEX stores normalized search coordinates, not final Kokkos values.
-    \item \textcolor{patchBlue}{\texttt{Context\_0}} is the \texttt{HydroE::Patch} tuning context associated with these two knobs.
+    \item \texttt{Context\_0} is the \texttt{HydroE::Patch} tuning context associated with these two knobs.
     \item The cache is still incomplete for this kernel: \textcolor{hlOrange}{\texttt{Converged: false}}.
     \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{Because there is no convergence, the next Dyablo run cannot reload one final winning configuration for \texttt{HydroE::Patch} from this yaml, APEX will tune this context again.}}}
 \end{itemize}
@@ -656,32 +655,26 @@ If \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.12pt}{\textcolor{red!
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
 \texttt{\scriptsize core/src/hyperbolic/scheme/Hyperbolic\_euler.h}}
 \begin{lstlisting}[language=C++,basicstyle=\ttfamily\tiny\color{termText},keywordstyle=\color{termText},stringstyle=\color{termText},commentstyle=\color{termText},identifierstyle=\color{termText},backgroundcolor=\color{termBg},numbers=none,frame=none,showstringspaces=false,columns=fullflexible,escapeinside={(*@}{@*)}]
-(*@{\color{termText!45!termBg}\ttfamily\tiny \detokenize{// split this kernel into 4 possible APEX tuning contexts}}@*)
+(*@{\color{green!70!black}\ttfamily\tiny \detokenize{const uint32_t nbOcts = foreach_cell_patch.get_amr_mesh().getNumOctants();}}@*)
 (*@{\color{green!70!black}\ttfamily\tiny \detokenize{const char* hydro_patch_label =}}@*)
-  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{(nbOcts < 512)  ? "HydroE::Patch_small" :}}@*)
-  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{(nbOcts < 1024) ? "HydroE::Patch_medium" :}}@*)
-  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{(nbOcts < 2048) ? "HydroE::Patch_large" :}}@*)
-  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{                   "HydroE::Patch_xlarge";}}@*)
+  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{(nbOcts < 1024) ? "HydroE::Patch_octs_lt1k" :}}@*)
+  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{(nbOcts < 2048) ? "HydroE::Patch_octs_1k_2k" :}}@*)
+  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{(nbOcts < 3072) ? "HydroE::Patch_octs_2k_3k" :}}@*)
+  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{(nbOcts < 4608) ? "HydroE::Patch_octs_3k_4k5" :}}@*)
+  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{(nbOcts < 6144) ? "HydroE::Patch_octs_4k5_6k" :}}@*)
+  (*@{\color{green!70!black}\ttfamily\tiny \detokenize{                   "HydroE::Patch_octs_ge6k";}}@*)
 Kokkos::parallel_for((*@{\color{green!70!black}\ttfamily\tiny \detokenize{hydro_patch_label}}@*),
   TeamPolicy(nbOcts, (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::AUTO()}}@*), (*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{Kokkos::AUTO()}}@*))
     .set_scratch_size(...),
   KOKKOS_LAMBDA(member_type team) {
-    Patch patch(..., team);
-    auto Qpatch = patch.allocate_tmp(...);
-    patch.foreach_cell("HydroE::QPatch", Qpatch, [&](CellIndex i) {
-      // conservative -> primitive
-    });
-    patch.foreach_cell("HydroE::Flux", Uout.getShape(), [&](CellIndex i) {
-      // slopes + reconstruction + Riemann solver
-      // atomic_add on Uout
-    });
+    // same HydroE::Patch body as before
   });
 \end{lstlisting}
 \end{beamerboxesrounded}
 
-\vspace{0.1em}
+\vspace{0.05em}
 {\scriptsize
-This minor intrusive split creates four distinct APEX contexts for \texttt{HydroE::Patch}, each one tied to a different \texttt{nbOcts} range. APEX then tunes more homogeneous workloads instead of one single mixed context.}
+This split creates six APEX contexts for \texttt{HydroE::Patch}, each one tied to a narrower \texttt{nbOcts} range, so APEX tunes more homogeneous workloads.}
 \end{frame}
 
 \begin{frame}[fragile,t]{Intrusive auto-tuning also needs repeated passes}
@@ -718,13 +711,138 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 {\tiny Branch: \href{https://github.com/daxmawal/Dyablo-apex/tree/intrusive_apex_hydroe_patch}{\texttt{daxmawal/Dyablo-apex}, \texttt{intrusive\_apex\_hydroe\_patch}}.}
 \end{frame}
 
-\begin{frame}[t]{APEX converged tuning trace for HydroE::Patch}
+\begin{frame}[fragile,t]{APEX converged tuning trace}
+\begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
+\textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
+\texttt{\scriptsize autotuning log excerpt for HydroE::Patch\_octs\_3k\_4k5}}
+{\ttfamily\fontsize{4.7}{5.0}\selectfont\color{termText}
+  \begin{semiverbatim}
+  -cv: 2[kokkos.kernel_name:HydroE::Patch_octs_3k_4k5,
+        kokkos.kernel_type:parallel_for,
+        tree_node:Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch_octs_3k_4k5]
+  Starting tuning session for [kokkos.kernel_name:HydroE::Patch_octs_3k_4k5,
+        kokkos.kernel_type:parallel_for,
+        tree_node:Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch_octs_3k_4k5]
+  -tv: 2[HydroE::Patch_octs_3k_4k5_vector_length:0.04995,
+        HydroE::Patch_octs_3k_4k5_team_size:0.04995]
+  querying time per call: \textcolor{red!80!black}{0.032065s}
+\textcolor{hotspotBlue}{Simulated Annealing: New best! \textcolor{red!80!black}{0.032065} k: 1 kmax: 324 temp: 0.00308642,}
+\textcolor{hotspotBlue}{HydroE::Patch_octs_3k_4k5_team_size: 0.049950, HydroE::Patch_octs_3k_4k5_vector_length: 0.049950}
+  ...
+  -tv: 2[HydroE::Patch_octs_3k_4k5_vector_length:0.2997,
+        HydroE::Patch_octs_3k_4k5_team_size:0.14985]
+  querying time per call: 0.00893853s
+\textcolor{hotspotBlue}{Simulated Annealing: New best! 0.00893853 k: 6 kmax: 324 temp: 0.0185185,}
+\textcolor{hotspotBlue}{HydroE::Patch_octs_3k_4k5_team_size: 0.149850, HydroE::Patch_octs_3k_4k5_vector_length: 0.299700}
+  ...
+  -tv: 2[HydroE::Patch_octs_3k_4k5_vector_length:0.4995,
+        HydroE::Patch_octs_3k_4k5_team_size:0.34965]
+  querying time per call: \textcolor{red!80!black}{0.00449144s}
+\textcolor{hlOrange}{Simulated Annealing: New best! \textcolor{red!80!black}{0.00449144} k: 22 kmax: 324 temp: 0.0679012,}
+\textcolor{hlOrange}{HydroE::Patch_octs_3k_4k5_team_size: 0.349650, HydroE::Patch_octs_3k_4k5_vector_length: 0.499500}
+  ...
+  -tv: 2[HydroE::Patch_octs_3k_4k5_vector_length:0.4995,
+        HydroE::Patch_octs_3k_4k5_team_size:0.34965]
+\textcolor{green!70!black}{APEX: Tuning has converged for session 6.}
+\textcolor{green!70!black}{[0.349650,0.499500]}
+\end{semiverbatim}}
+\end{beamerboxesrounded}
+\vspace{0.08em}
+\scriptsize
+\begin{itemize}\itemsep0.06em
+    \item For the \texttt{HydroE::Patch\_octs\_3k\_4k5} bucket, the trace starts with a first best at \texttt{\textcolor{red!80!black}{0.032065s}} per call and converges to a best measured candidate at \texttt{\textcolor{red!80!black}{0.00449144s}}.
+    \item The winning normalized coordinates for this context are \texttt{team\_size = 0.34965} and \texttt{vector\_length = 0.4995}, after repeated reuse of that pair, APEX declares convergence.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,t]{APEX converged yaml cache after the run}
+\begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
+\textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
+\textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
+\texttt{\scriptsize apex\_converged\_tuning.0.yaml excerpt for HydroE::Patch\_octs\_3k\_4k5}}
+{\ttfamily\tiny\color{termText}
+\begin{semiverbatim}
+Output_14:
+  name: \textcolor{green!70!black}{HydroE::Patch_octs_3k_4k5_vector_length}
+  info.candidates: \textcolor{hotspotBlue}{[lower: 0, upper: 0.999, step: 0.04995]}
+Output_15:
+  name: \textcolor{green!70!black}{HydroE::Patch_octs_3k_4k5_team_size}
+  info.candidates: \textcolor{hotspotBlue}{[lower: 0, upper: 0.999, step: 0.04995]}
+Context_2:
+  Name: "[kokkos.kernel_name:\textcolor{patchBlue}{HydroE::Patch_octs_3k_4k5},
+         kokkos.kernel_type:parallel_for,
+         tree_node:Kokkos::parallel_for [Cuda, Dev:0] \textcolor{patchBlue}{HydroE::Patch_octs_3k_4k5}]"
+  Strategy: "simulated annealing"
+  \fcolorbox{green!70!black}{termBg}{\strut\textcolor{green!70!black}{Converged: true}}
+  Results:
+    NumVars: 2
+    id: 14
+    value: \textcolor{hlOrange}{0.4995}
+    id: 15
+    value: \textcolor{hlOrange}{0.34965}
+\end{semiverbatim}}
+\end{beamerboxesrounded}
 \end{frame}
 
 \begin{frame}[t]{APEX converged yaml cache after the run}
+\begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{%
+\texttt{\scriptsize HydroE results from apex\_converged\_tuning.0.yaml}}
+{\scriptsize\color{black}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}llll@{}}
+\toprule
+HydroE kernel & Context & vector\_length & team\_size \\
+\midrule
+\texttt{HydroE::Patch\_octs\_1k\_2k} & \texttt{Context\_6} & 0.1998 $\rightarrow$ \texttt{2} & 0.44955 $\rightarrow$ \texttt{16} \\
+\texttt{HydroE::Patch\_octs\_2k\_3k} & \texttt{Context\_3} & 0.4995 $\rightarrow$ \texttt{4} & 0.34965 $\rightarrow$ \texttt{16} \\
+\texttt{HydroE::Patch\_octs\_3k\_4k5} & \texttt{Context\_2} & 0.4995 $\rightarrow$ \texttt{4} & 0.34965 $\rightarrow$ \texttt{16} \\
+\texttt{HydroE::Patch\_octs\_4k5\_6k} & \texttt{Context\_1} & 0.2997 $\rightarrow$ \texttt{2} & 0.3996 $\rightarrow$ \texttt{16} \\
+\texttt{HydroE::Patch\_octs\_ge6k} & \texttt{Context\_0} & 0.4995 $\rightarrow$ \texttt{4} & 0.2997 $\rightarrow$ \texttt{16} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}}
+\end{beamerboxesrounded}
+
+\vspace{0.08em}
+{\scriptsize
+\begin{itemize}\itemsep0.08em
+  \item \textbf{Rule:} The yaml stores normalized values. Kokkos converts them with \texttt{index = floor(N * value\_yaml)} and then selects candidate \texttt{index}.
+  \item \textbf{vector\_length candidates:} \texttt{[1, 2, 4, 8, 16, 32]}
+  \item \textbf{team\_size candidates:} 
+  \begin{itemize}\itemsep0.03em
+  \item[--] If \texttt{vector\_length = 2}: \texttt{[128, 64, 32, 16, 8, 4, 2, 1]}. 
+  \item[--] If \texttt{vector\_length = 4}: \texttt{[64, 32, 16, 8, 4, 2, 1]}.
+  \end{itemize}
+  \item \textbf{Example:} \texttt{0.4995 -> 4}, then \texttt{0.34965 -> 16}. Different normalized values can still map to the same final \texttt{team\_size}.
+\end{itemize}}
 \end{frame}
 
 \begin{frame}[t]{Performance comparison}
+\begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{%
+\texttt{\scriptsize Dyablo timers: AUTO vs APEX-guided HydroE::Patch (GPU times)}}
+{\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Metric & AUTO & APEX-guided & Speedup \\
+\midrule
+Total & 13.547 s & 5.798 s & 2.34x \\
+AMR & 2.156 s & 2.125 s & 1.01x \\
+HyperbolicUpdate\_euler & 10.921 s & 3.210 s & 3.40x \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}}
+\end{beamerboxesrounded}
+
+\vspace{0.1em}
+{\scriptsize
+\begin{itemize}\itemsep0.08em
+  \item \texttt{AUTO} means \texttt{HydroE::Patch} is left to plain Kokkos \texttt{AUTO} for \texttt{team\_size} and \texttt{vector\_length}.
+  \item The gain is in \texttt{HyperbolicUpdate\_euler} around \texttt{3.40x} faster, while \texttt{AMR} stays unchanged.
+\end{itemize}}
 \end{frame}
 
 % =========================================================
