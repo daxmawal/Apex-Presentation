@@ -1,0 +1,415 @@
+          (            )
+   (      )\ )      ( /(
+   )\    (()/( (    )\())
+((((_)(   /(_)))\  ((_)\
+ )\ _ )\ (_)) ((_) __((_)
+ (_)_\(_)| _ \| __|\ \/ /
+  / _ \  |  _/| _|  >  <
+ /_/ \_\ |_|  |___|/_/\_\
+
+APEX Version: v2.7.1-2bd7ac2c-develop
+Built on: 19:24:21 Apr  5 2026 (Release)
+C++ Language Standard version : 201703
+GCC Compiler version : 13.3.0
+Configured features: Pthread, CUDA
+
+Executing command line: ./dyablo test_sod_3D.ini 
+
+##########################
+KOKKOS CONFIG             
+##########################
+Kokkos configuration
+  Kokkos Version: 5.0.0
+Compiler:
+  KOKKOS_COMPILER_GNU: 1330
+  KOKKOS_COMPILER_NVCC: 1280
+Architecture:
+  CPU architecture: none
+  Default Device: Cuda
+  GPU architecture: ADA89
+  platform: 64bit
+Atomics:
+  desul atomics version: 79f928075837ffb5d302aae188e0ec7b7a79ae94
+View:
+  mdspan: enabled
+  mdspan version: 537053f83150f1b6f7528c1d961866d8628abc2e
+Vectorization:
+  KOKKOS_ENABLE_PRAGMA_IVDEP: no
+  KOKKOS_ENABLE_PRAGMA_LOOPCOUNT: no
+  KOKKOS_ENABLE_PRAGMA_UNROLL: no
+  KOKKOS_ENABLE_PRAGMA_VECTOR: no
+Memory:
+Options:
+  KOKKOS_ENABLE_ASM: yes
+  KOKKOS_ENABLE_CXX20: yes
+  KOKKOS_ENABLE_CXX23: no
+  KOKKOS_ENABLE_CXX26: no
+  KOKKOS_ENABLE_DEBUG_BOUNDS_CHECK: no
+  KOKKOS_ENABLE_HWLOC: no
+  KOKKOS_ENABLE_LIBDL: yes
+Host Parallel Execution Space:
+  KOKKOS_ENABLE_OPENMP: yes
+
+OpenMP Runtime Configuration:
+Kokkos::OpenMP thread_pool_topology[ 1 x 32 x 1 ]
+Device Execution Space:
+  KOKKOS_ENABLE_CUDA: yes
+Cuda Options:
+  KOKKOS_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE: no
+  KOKKOS_ENABLE_CUDA_UVM: no
+  KOKKOS_ENABLE_IMPL_CUDA_MALLOC_ASYNC: no
+
+Cuda Runtime Configuration:
+macro  KOKKOS_ENABLE_CUDA      : defined
+macro  CUDA_VERSION          : 12080 = version 12.8
+Kokkos::Cuda[ 0 ] NVIDIA RTX 4000 Ada Generation Laptop GPU : Selected
+  Capability: 8.9
+  Total Global Memory: 11.6 GiB
+  Shared Memory per Block: 48 KiB
+  Can access system allocated memory: 0
+    via Address Translation Service: 0
+##########################
+I'm MPI task #0 (out of 1) pinned to GPU #0
+.ini  found   : ini                      print_config             'false'                   -> false
+AMRmesh initialized : 32 ( 0 ) 
+Reallocate : add fields 0 -> 5
+##########################
+Godunov updater    : HydroUpdate_euler
+IO Manager         : IOManager_hdf5
+Gravity solver     : none
+Initial conditions : `sod` 
+Refine condition   : RefineCondition_pseudo_gradient
+Compute dt         : `Compute_dt_hydro` 
+Source Terms : 
+##########################
+Output: scalar_data : iter=0 aexp=1 dt=1 time=0 
+scalar_data : iter=0 aexp=1 dt=0.000807033 time=0 
+Mesh - rank 0 octs : 1208 (0)
+Reallocate : add fields 5 -> 10
+scalar_data : iter=10 aexp=1 dt=0.000632224 time=0.00706275 
+Mesh - rank 0 octs : 1208 (0)
+scalar_data : iter=20 aexp=1 dt=0.000593442 time=0.0131665 
+Mesh - rank 0 octs : 1796 (0)
+scalar_data : iter=30 aexp=1 dt=0.000583616 time=0.0190337 
+Mesh - rank 0 octs : 2384 (0)
+scalar_data : iter=40 aexp=1 dt=0.000586178 time=0.0248785 
+Mesh - rank 0 octs : 2384 (0)
+scalar_data : iter=50 aexp=1 dt=0.000591942 time=0.0307666 
+Mesh - rank 0 octs : 2832 (0)
+scalar_data : iter=60 aexp=1 dt=0.000596656 time=0.0367099 
+Mesh - rank 0 octs : 2832 (0)
+scalar_data : iter=70 aexp=1 dt=0.000593853 time=0.0426655 
+Mesh - rank 0 octs : 2832 (0)
+scalar_data : iter=80 aexp=1 dt=0.000593403 time=0.0485989 
+Mesh - rank 0 octs : 3840 (0)
+scalar_data : iter=90 aexp=1 dt=0.000594101 time=0.0545354 
+Mesh - rank 0 octs : 3840 (0)
+scalar_data : iter=100 aexp=1 dt=0.000595714 time=0.0604828 
+Mesh - rank 0 octs : 3392 (0)
+scalar_data : iter=110 aexp=1 dt=0.000596123 time=0.0664435 
+Mesh - rank 0 octs : 3840 (0)
+scalar_data : iter=120 aexp=1 dt=0.000595713 time=0.0724018 
+Mesh - rank 0 octs : 4400 (0)
+scalar_data : iter=130 aexp=1 dt=0.000595838 time=0.0783592 
+Mesh - rank 0 octs : 3952 (0)
+scalar_data : iter=140 aexp=1 dt=0.000596443 time=0.0843195 
+Mesh - rank 0 octs : 4540 (0)
+scalar_data : iter=150 aexp=1 dt=0.000598261 time=0.0902896 
+Mesh - rank 0 octs : 4092 (0)
+scalar_data : iter=160 aexp=1 dt=0.000596816 time=0.0962627 
+Mesh - rank 0 octs : 5436 (0)
+scalar_data : iter=170 aexp=1 dt=0.000596808 time=0.102231 
+Mesh - rank 0 octs : 4988 (0)
+scalar_data : iter=180 aexp=1 dt=0.000596863 time=0.108199 
+Mesh - rank 0 octs : 4540 (0)
+scalar_data : iter=190 aexp=1 dt=0.000596955 time=0.114168 
+Mesh - rank 0 octs : 5100 (0)
+scalar_data : iter=200 aexp=1 dt=0.00059734 time=0.120139 
+Mesh - rank 0 octs : 5100 (0)
+scalar_data : iter=210 aexp=1 dt=0.000598575 time=0.126119 
+Mesh - rank 0 octs : 5240 (0)
+scalar_data : iter=220 aexp=1 dt=0.00059735 time=0.132095 
+Mesh - rank 0 octs : 6136 (0)
+scalar_data : iter=230 aexp=1 dt=0.000597369 time=0.138068 
+Mesh - rank 0 octs : 6136 (0)
+scalar_data : iter=240 aexp=1 dt=0.000597403 time=0.144042 
+Mesh - rank 0 octs : 5240 (0)
+scalar_data : iter=250 aexp=1 dt=0.000597463 time=0.150016 
+Mesh - rank 0 octs : 6276 (0)
+scalar_data : iter=260 aexp=1 dt=0.000597969 time=0.155992 
+Mesh - rank 0 octs : 6276 (0)
+scalar_data : iter=270 aexp=1 dt=0.000598617 time=0.161977 
+Mesh - rank 0 octs : 5716 (0)
+scalar_data : iter=280 aexp=1 dt=0.000597717 time=0.167955 
+Mesh - rank 0 octs : 6724 (0)
+scalar_data : iter=290 aexp=1 dt=0.000597746 time=0.173932 
+Mesh - rank 0 octs : 6724 (0)
+scalar_data : iter=300 aexp=1 dt=0.000597767 time=0.17991 
+Mesh - rank 0 octs : 6388 (0)
+scalar_data : iter=310 aexp=1 dt=0.000597844 time=0.185888 
+Mesh - rank 0 octs : 6948 (0)
+scalar_data : iter=320 aexp=1 dt=0.000598405 time=0.191868 
+Mesh - rank 0 octs : 6388 (0)
+scalar_data : iter=330 aexp=1 dt=0.000598652 time=0.197855 
+Mesh - rank 0 octs : 6388 (0)
+scalar_data : iter=340 aexp=1 dt=0.000597982 time=0.203835 
+Mesh - rank 0 octs : 7732 (0)
+scalar_data : iter=350 aexp=1 dt=0.000597997 time=0.209815 
+Mesh - rank 0 octs : 7284 (0)
+scalar_data : iter=360 aexp=1 dt=0.000598015 time=0.215795 
+Mesh - rank 0 octs : 6724 (0)
+scalar_data : iter=370 aexp=1 dt=0.000598133 time=0.221775 
+Mesh - rank 0 octs : 6724 (0)
+scalar_data : iter=380 aexp=1 dt=0.000598741 time=0.227759 
+Mesh - rank 0 octs : 6164 (0)
+scalar_data : iter=390 aexp=1 dt=0.000598651 time=0.233746 
+Mesh - rank 0 octs : 7200 (0)
+scalar_data : iter=400 aexp=1 dt=0.000598177 time=0.239728 
+Mesh - rank 0 octs : 7760 (0)
+scalar_data : iter=410 aexp=1 dt=0.000598198 time=0.24571 
+Mesh - rank 0 octs : 7312 (0)
+Final scalar_data : iter=418 aexp=1 dt=0.000102422 time=0.25 
+Total                     time (CPU) :   346.719 s (100.00%) , (GPU) :   346.713 s (100.00%)
+| Init                      time (CPU) :     1.174 s (  0.34%) , (GPU) :     1.174 s (  0.34%)
+| | initial_conditions        time (CPU) :     1.173 s (  0.34%) , (GPU) :     1.173 s (  0.34%)
+| | other                     time (CPU) :     0.000 s (  0.00%) , (GPU) :     0.000 s (  0.00%)
+| TimeLoop                  time (CPU) :   343.129 s ( 98.96%) , (GPU) :   343.123 s ( 98.96%)
+| | AMR                       time (CPU) :   207.811 s ( 59.94%) , (GPU) :   207.808 s ( 59.94%)
+| | | AMR: Mark cells           time (CPU) :    59.920 s ( 17.28%) , (GPU) :    59.921 s ( 17.28%)
+| | | AMR: adapt                time (CPU) :    43.533 s ( 12.56%) , (GPU) :    43.628 s ( 12.58%)
+| | | AMR: remap userdata       time (CPU) :    99.926 s ( 28.82%) , (GPU) :   100.056 s ( 28.86%)
+| | | MPI ghosts                time (CPU) :     0.086 s (  0.02%) , (GPU) :     0.086 s (  0.02%)
+| | | other                     time (CPU) :     4.346 s (  1.25%) , (GPU) :     4.117 s (  1.19%)
+| | AMR: load-balance         time (CPU) :     2.001 s (  0.58%) , (GPU) :     2.002 s (  0.58%)
+| | HyperbolicUpdate_euler    time (CPU) :    81.917 s ( 23.63%) , (GPU) :    81.916 s ( 23.63%)
+| | MPI ghosts                time (CPU) :     0.622 s (  0.18%) , (GPU) :     0.621 s (  0.18%)
+| | checkpoint                time (CPU) :     0.306 s (  0.09%) , (GPU) :     0.307 s (  0.09%)
+| | dt                        time (CPU) :    18.296 s (  5.28%) , (GPU) :    18.577 s (  5.36%)
+| | outputs                   time (CPU) :     0.349 s (  0.10%) , (GPU) :     0.348 s (  0.10%)
+| | other                     time (CPU) :    31.826 s (  9.18%) , (GPU) :    31.544 s (  9.10%)
+| checkpoint                time (CPU) :     0.946 s (  0.27%) , (GPU) :     0.946 s (  0.27%)
+| outputs                   time (CPU) :     1.470 s (  0.42%) , (GPU) :     1.470 s (  0.42%)
+| other                     time (CPU) :     0.000 s (  0.00%) , (GPU) :     0.000 s (  0.00%)
+Rank: 0, Kokkos allocation Leak: Kokkos Cuda data, Kokkos::CudaSpace::TeamScratchMemory: Bytes
+Rank: 0, Kokkos allocation Leak: Kokkos Cuda data, Kokkos::CudaSpace::TeamScratchMemory: Bytes
+
+Command line: ./dyablo test_sod_3D.ini 
+Start Date/Time: 05/04/2026 22:08:59
+Elapsed time: 347.7 seconds
+Total processes detected: 1
+HW Threads detected on rank 0: 1
+Worker Threads observed on rank 0: 2
+Available CPU time on rank 0: 347.7 seconds
+Available CPU time on all ranks: 347.7 seconds
+
+Counter                                              :  #samp |   mean  |  max
+--------------------------------------------------------------------------------
+                               1 Minute Load average :    343    74.77    87.72 
+                                         CPU Guest % :    342     0.00     0.00 
+                                      CPU I/O Wait % :    342     0.21     0.85 
+                                           CPU IRQ % :    342     0.00     0.00 
+                                          CPU Idle % :    342    87.82    90.62 
+                                          CPU Nice % :    342     0.00     0.00 
+                                         CPU Steal % :    342     0.00     0.00 
+                                        CPU System % :    342     1.41     4.18 
+                                          CPU User % :    342    10.55    21.07 
+                                      CPU soft IRQ % :    342     0.01     0.16 
+                                         DRAM Energy :    342     0.00     0.00 
+                                    Package-0 Energy :    342     0.00     0.00 
+                                      status:Threads :    343    38.00    38.00 
+                                    status:VmData kB :    343 3.77e+05 3.82e+05 
+                                     status:VmExe kB :    343  6312.00  6312.00 
+                                     status:VmHWM kB :    343 1.77e+05 2.05e+05 
+                                     status:VmLck kB :    343     0.00     0.00 
+                                     status:VmLib kB :    343 5.88e+04 5.88e+04 
+                                     status:VmPTE kB :    343   794.12   804.00 
+                                    status:VmPeak kB :    343 1.02e+07 1.02e+07 
+                                     status:VmPin kB :    343     0.00     0.00 
+                                     status:VmRSS kB :    343 1.76e+05 1.81e+05 
+                                    status:VmSize kB :    343 1.02e+07 1.02e+07 
+                                     status:VmStk kB :    343   136.00   136.00 
+                                    status:VmSwap kB :    343     0.00     0.00 
+                   status:nonvoluntary_ctxt_switches :    343  1260.09  2441.00 
+                      status:voluntary_ctxt_switches :    343   625.13   861.00 
+--------------------------------------------------------------------------------
+
+CPU Timers                                           : #calls|   mean |   total
+--------------------------------------------------------------------------------
+                                           APEX MAIN :      1   347.70   347.70 
+                                Kokkos region, Total :      3   115.57   346.72 
+                             Kokkos region, TimeLoop :      1   343.13   343.13 
+                                  Kokkos region, AMR :    418     0.50   207.81 
+                  Kokkos region, AMR: remap userdata :    418     0.24    99.92 
+               Kokkos region, HyperbolicUpdate_euler :    418     0.20    81.92 
+    Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch :    418     0.19    79.84 
+                      Kokkos region, AMR: Mark cells :    418     0.14    59.92 
+Kokkos::parallel_for [Cuda, Dev:0] RefineCondition_… :    421     0.13    56.78 
+                           Kokkos region, AMR: adapt :    418     0.10    43.53 
+Kokkos deep copy: Cuda UserData_fields -> Cuda User… :    854     0.02    21.30 
+Kokkos deep copy: Host subset_recv_request_count ->… :    418     0.05    21.25 
+   Kokkos::parallel_for [OpenMP] Kokkos::ViewCopy-1D :    418     0.05    21.25 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::ViewCopy… :    865     0.02    20.99 
+        Kokkos::parallel_for [Cuda, Dev:0] add_cells : 161280     0.00    18.70 
+                                   Kokkos region, dt :    418     0.04    18.30 
+    Kokkos::parallel_reduce [Cuda, Dev:0] compute_dt :    418     0.03    11.29 
+Kokkos::parallel_reduce [Cuda, Dev:0] adapt::check_… :   2281     0.00     8.02 
+Kokkos::parallel_for [Cuda, Dev:0] LightOctree_hash… :    851     0.00     3.65 
+Kokkos deep copy: Cuda LightOctree_storage -> Host … :    434     0.00     2.13 
+Kokkos deep copy: Host Scalar -> Cuda UnorderedMap … :   1286     0.00     2.12 
+Kokkos::parallel_reduce [Cuda, Dev:0] discover_ghos… :    434     0.00     2.07 
+                    Kokkos region, AMR: load-balance :      8     0.25     2.00 
+Kokkos deep copy: Host varindex_to_viewindex_mirror… :   3363     0.00     1.95 
+                              Kokkos region, outputs :    419     0.00     1.82 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :   3363     0.00     1.60 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    858     0.00     1.50 
+                           Kokkos region, checkpoint :    419     0.00     1.25 
+Kokkos deep copy: Host LightOctree_storage -> Cuda … :   1284     0.00     1.24 
+       Kokkos deep copy: Cuda pos -> Host pos_mirror :    851     0.00     1.20 
+                                 Kokkos region, Init :      1     1.17     1.17 
+                   Kokkos region, initial_conditions :      1     1.17     1.17 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::ViewFill… :   2572     0.00     1.12 
+Kokkos deep copy: Host morton_intervals_mirror -> C… :    851     0.00     1.02 
+Kokkos deep copy: Cuda discover_ghosts::to_send_cou… :   2531     0.00     1.01 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :   1286     0.00     0.98 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    421     0.00     0.89 
+             Kokkos deep copy: Host _mirror -> Cuda  :   1711     0.00     0.87 
+Kokkos::parallel_for [Cuda, Dev:0] MarkOctantsHydro… :    421     0.00     0.86 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    851     0.00     0.75 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :   2152     0.00     0.74 
+                           Kokkos region, MPI ghosts :    836     0.00     0.69 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :   1286     0.00     0.62 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :   1286     0.00     0.62 
+   Kokkos::parallel_for [Cuda, Dev:0] zero_new_field :   2095     0.00     0.60 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :   1286     0.00     0.58 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :   3363     0.00     0.57 
+Kokkos deep copy: Host ivar_to_viewindex_mirror -> … :   3363     0.00     0.56 
+Kokkos deep copy: Cuda UnorderedMap - scalars -> Ho… :    434     0.00     0.55 
+Kokkos::parallel_scan [Cuda, Dev:0] discover_ghosts… :    434     0.00     0.54 
+Kokkos::parallel_for [OpenMP] Kokkos::Impl::hostspa… :     15     0.03     0.52 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    840     0.00     0.52 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :   1286     0.00     0.51 
+Kokkos::parallel_reduce [Cuda, Dev:0] Remap::list_g… :    418     0.00     0.50 
+Kokkos::parallel_scan [Cuda, Dev:0] AMRmesh::init::… :      1     0.48     0.48 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    851     0.00     0.46 
+Kokkos deep copy: Cuda oct_marker_max -> Host marke… :    421     0.00     0.41 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    836     0.00     0.40 
+Kokkos::parallel_for [Cuda, Dev:0] zero_new_field_g… :   2095     0.00     0.38 
+Kokkos::parallel_scan [Cuda, Dev:0] GhostCommunicat… :    840     0.00     0.33 
+     Kokkos::parallel_for [Cuda, Dev:0] fill_markers :    421     0.00     0.31 
+Kokkos deep copy: Cuda subset_send_request_count ->… :    418     0.00     0.30 
+Kokkos::parallel_for [Cuda, Dev:0] adapt:compute_mo… :    421     0.00     0.29 
+     Kokkos::parallel_for [Cuda, Dev:0] HydroE::Init :    418     0.00     0.29 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    836     0.00     0.29 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    840     0.00     0.28 
+     Kokkos::parallel_for [Cuda, Dev:0] adapt::apply :    421     0.00     0.27 
+Kokkos deep copy: Host Scalar -> Cuda UnorderedMap … :   1286     0.00     0.26 
+Kokkos deep copy: Cuda adapt::markers -> Cuda adapt… :   2281     0.00     0.23 
+Kokkos deep copy: Cuda LightOctree_storage -> Cuda … :    868     0.00     0.23 
+Kokkos::parallel_for [Cuda, Dev:0] ViewCommunicator… :   3385     0.00     0.21 
+Kokkos deep copy: Host discover_ghosts::to_send_cou… :    434     0.00     0.20 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    421     0.00     0.20 
+Kokkos deep copy: Host markers -> Cuda adapt::marke… :    421     0.00     0.20 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    418     0.00     0.20 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    434     0.00     0.20 
+Kokkos::parallel_for [Cuda, Dev:0] ViewCommunicator… :   2544     0.00     0.19 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :   3363     0.00     0.14 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    418     0.00     0.14 
+Kokkos::parallel_for [Cuda, Dev:0] GhostCommunicato… :    840     0.00     0.13 
+Kokkos::parallel_for [Cuda, Dev:0] get_first_oct_co… :    851     0.00     0.11 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :    851     0.00     0.11 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :    434     0.00     0.11 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :   2965     0.00     0.11 
+Kokkos deep copy: Cuda connectivity -> Host connect… :      2     0.05     0.10 
+Kokkos::parallel_for [Cuda, Dev:0] MapUserData_mean… :    418     0.00     0.09 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :      2     0.04     0.09 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :      2     0.04     0.09 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :      1     0.07     0.07 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :      2     0.04     0.07 
+     Kokkos::parallel_for [Cuda, Dev:0] HydroE::Post :    418     0.00     0.07 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :      1     0.06     0.06 
+Kokkos deep copy: Host facemask_count_mirror -> Cud… :    840     0.00     0.05 
+Kokkos::parallel_scan [Cuda, Dev:0] adapt::count_ne… :    421     0.00     0.05 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :      2     0.02     0.05 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :      2     0.02     0.04 
+Kokkos deep copy: Host send_iOcts_sizes_mirror -> C… :    418     0.00     0.03 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :      1     0.03     0.03 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :      1     0.03     0.03 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :   1712     0.00     0.01 
+   Kokkos::parallel_for [Cuda, Dev:0] Print Warnings :    418     0.00     0.01 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    842     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] ViewCommunicator… :   3385     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :      1     0.00     0.00 
+Kokkos deep copy: Cuda morton_interval_begin -> Hos… :    421     0.00     0.00 
+Kokkos deep copy: Cuda send_iOcts_sizes -> Host sen… :    418     0.00     0.00 
+Kokkos deep copy: Host discover_ghosts::morton_inte… :    434     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :   3363     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    434     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    421     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :    418     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] compute_coordina… :      2     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] OctSubset::conve… :    418     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] GhostCommunicato… :    840     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :   1712     0.00     0.00 
+Kokkos deep copy: Cuda coordinates -> Host coordina… :      2     0.00     0.00 
+Kokkos deep copy: Cuda discover_ghosts::masks -> Ho… :    840     0.00     0.00 
+Kokkos::parallel_scan [Cuda, Dev:0] GhostCommunicat… :    840     0.00     0.00 
+Kokkos deep copy: Cuda UserData_fields -> Cuda fiel… :      3     0.00     0.00 
+Kokkos deep copy: Cuda UserData_fields -> Cuda fiel… :      3     0.00     0.00 
+Kokkos deep copy: Host ghostmap_recv_masks_mirror -… :    840     0.00     0.00 
+Kokkos deep copy: Cuda UserData_fields -> Cuda fiel… :      3     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :    434     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :    836     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :    840     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] OctSubset::unpac… :    418     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :    851     0.00     0.00 
+   Kokkos::parallel_for [Cuda, Dev:0] HydroE::Ghost0 :    418     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::ViewCopy… :    418     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] exchange_ghosts_… :    418     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] InitialCondition… :      4     0.00     0.00 
+Kokkos deep copy: Cuda UserData_fields -> Cuda fiel… :      1     0.00     0.00 
+Kokkos deep copy: Cuda UserData_fields -> Cuda fiel… :      1     0.00     0.00 
+Kokkos deep copy: Cuda field_rho_vy -> Host field_r… :      1     0.00     0.00 
+Kokkos deep copy: Cuda field_rho_vz -> Host field_r… :      1     0.00     0.00 
+Kokkos deep copy: Cuda subset_send_request_iOcts_re… :    418     0.00     0.00 
+Kokkos deep copy: Host subset_recv_request_iOcts_gh… :    418     0.00     0.00 
+Kokkos deep copy: Cuda field_rho -> Host field_rho_… :      1     0.00     0.00 
+Kokkos deep copy: Cuda field_e_tot -> Host field_e_… :      1     0.00     0.00 
+Kokkos deep copy: Cuda field_rho_vx -> Host field_r… :      1     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :    421     0.00     0.00 
+ Kokkos deep copy: Cuda rho_vx -> Host rho_vx_mirror :      2     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :    434     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] transpose_to_rig… :      1     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :    418     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :    418     0.00     0.00 
+       Kokkos deep copy: Cuda rho -> Host rho_mirror :      2     0.00     0.00 
+   Kokkos deep copy: Cuda e_tot -> Host e_tot_mirror :      2     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] fill_connectivity :      2     0.00     0.00 
+Kokkos deep copy: Cuda Loadbalance::send_sizes -> H… :     20     0.00     0.00 
+Kokkos deep copy: Host Loadbalance::send_sizes_mirr… :     12     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Loadbalance::cre… :     12     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      2     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :     12     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] compute_node_coo… :      6     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :     12     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      2     0.00     0.00 
+   Kokkos::parallel_scan [Cuda, Dev:0] AMRmesh::init :      1     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      3     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      2     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      3     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      2     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      3     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      2     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      2     0.00     0.00 
+             Kokkos deep copy: Cuda  -> Host _mirror :      1     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :     32     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      1     0.00     0.00 
+Kokkos deep copy: Cuda first_morton_index -> Host f… :      1     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      1     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      1     0.00     0.00 
+Kokkos::parallel_for [Cuda, Dev:0] Kokkos::View::in… :      1     0.00     0.00 
+Kokkos::parallel_for [OpenMP] Kokkos::View::initial… :      1     0.00     0.00 
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+                                        Total timers : 271 844

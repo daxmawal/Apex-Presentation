@@ -1,0 +1,300 @@
+Input_1:
+  hash: 9043849049422021755
+  name: kokkos.kernel_name
+  id: 1
+  info.type: string
+  info.category: categorical
+  info.valueQuantity: unbounded
+  info.candidates: unbounded
+  num_bins: 0
+Input_2:
+  hash: 13727781701788293186
+  name: kokkos.kernel_type
+  id: 2
+  info.type: string
+  info.category: categorical
+  info.valueQuantity: set
+  info.candidates: [parallel_for,parallel_reduce,parallel_scan,parallel_copy]
+Output_3:
+  hash: 16985500563581935135
+  name: GhostCommunicator_partial_blocks::list_send_cells_vector_length
+  id: 3
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_4:
+  hash: 18314475949852087304
+  name: GhostCommunicator_partial_blocks::list_send_cells_team_size
+  id: 4
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_5:
+  hash: 922612979862304237
+  name: GhostCommunicator_partial_blocks::list_recv_cells_vector_length
+  id: 5
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_6:
+  hash: 18403709077745720206
+  name: GhostCommunicator_partial_blocks::list_recv_cells_team_size
+  id: 6
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_7:
+  hash: 409566026412079096
+  name: Kokkos::ViewCopy-3D_tile_size_0
+  id: 7
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.0666
+    open upper: 1
+    open lower: 1
+Output_8:
+  hash: 10240552911980032223
+  name: Kokkos::ViewCopy-3D_tile_size_1
+  id: 8
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.0666
+    open upper: 1
+    open lower: 1
+Output_9:
+  hash: 6989178261588126663
+  name: Kokkos::ViewCopy-3D_tile_size_2
+  id: 9
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.0666
+    open upper: 1
+    open lower: 1
+Output_10:
+  hash: 494374926976253431
+  name: HydroE::Patch_octs_1k_2k_vector_length
+  id: 10
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_11:
+  hash: 8465631793002191863
+  name: HydroE::Patch_octs_1k_2k_team_size
+  id: 11
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_12:
+  hash: 8162305896893987797
+  name: HydroE::Patch_octs_2k_3k_vector_length
+  id: 12
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_13:
+  hash: 4522447321848825124
+  name: HydroE::Patch_octs_2k_3k_team_size
+  id: 13
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_14:
+  hash: 2506539213343028513
+  name: HydroE::Patch_octs_3k_4k5_vector_length
+  id: 14
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_15:
+  hash: 12804616992472205335
+  name: HydroE::Patch_octs_3k_4k5_team_size
+  id: 15
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_16:
+  hash: 8639210763527442514
+  name: HydroE::Patch_octs_4k5_6k_vector_length
+  id: 16
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_17:
+  hash: 13088822472175302610
+  name: HydroE::Patch_octs_4k5_6k_team_size
+  id: 17
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_18:
+  hash: 1956812630326878194
+  name: HydroE::Patch_octs_ge6k_vector_length
+  id: 18
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Output_19:
+  hash: 11568551204371031416
+  name: HydroE::Patch_octs_ge6k_team_size
+  id: 19
+  info.type: double
+  info.category: interval
+  info.valueQuantity: range
+  info.candidates: 
+    lower: 0
+    upper: 0.999
+    step: 0.04995
+    open upper: 1
+    open lower: 1
+Context_0:
+  Name: "[kokkos.kernel_name:HydroE::Patch_octs_ge6k,kokkos.kernel_type:parallel_for,tree_node:Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch_octs_ge6k]"
+  Strategy: "simulated annealing"
+  Converged: true
+  Results:
+    NumVars: 2
+    id: 18
+    value: 0.4995
+    id: 19
+    value: 0.2997
+Context_1:
+  Name: "[kokkos.kernel_name:HydroE::Patch_octs_4k5_6k,kokkos.kernel_type:parallel_for,tree_node:Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch_octs_4k5_6k]"
+  Strategy: "simulated annealing"
+  Converged: true
+  Results:
+    NumVars: 2
+    id: 16
+    value: 0.2997
+    id: 17
+    value: 0.3996
+Context_2:
+  Name: "[kokkos.kernel_name:HydroE::Patch_octs_3k_4k5,kokkos.kernel_type:parallel_for,tree_node:Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch_octs_3k_4k5]"
+  Strategy: "simulated annealing"
+  Converged: true
+  Results:
+    NumVars: 2
+    id: 14
+    value: 0.4995
+    id: 15
+    value: 0.34965
+Context_3:
+  Name: "[kokkos.kernel_name:HydroE::Patch_octs_2k_3k,kokkos.kernel_type:parallel_for,tree_node:Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch_octs_2k_3k]"
+  Strategy: "simulated annealing"
+  Converged: true
+  Results:
+    NumVars: 2
+    id: 12
+    value: 0.4995
+    id: 13
+    value: 0.34965
+Context_4:
+  Name: "[kokkos.kernel_name:Kokkos::ViewCopy-3D,kokkos.kernel_type:parallel_for,tree_node:Kokkos::parallel_for [Cuda, Dev:0] Kokkos::ViewCopy-3D]"
+  Strategy: "simulated annealing"
+  Converged: false
+Context_5:
+  Name: "[kokkos.kernel_name:GhostCommunicator_partial_blocks::list_recv_cells,kokkos.kernel_type:parallel_for,tree_node:Kokkos::parallel_for [Cuda, Dev:0] GhostCommunicator_partial_blocks::list_recv_cells]"
+  Strategy: "simulated annealing"
+  Converged: false
+Context_6:
+  Name: "[kokkos.kernel_name:HydroE::Patch_octs_1k_2k,kokkos.kernel_type:parallel_for,tree_node:Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch_octs_1k_2k]"
+  Strategy: "simulated annealing"
+  Converged: true
+  Results:
+    NumVars: 2
+    id: 10
+    value: 0.1998
+    id: 11
+    value: 0.44955
+Context_7:
+  Name: "[kokkos.kernel_name:GhostCommunicator_partial_blocks::list_send_cells,kokkos.kernel_type:parallel_for,tree_node:Kokkos::parallel_for [Cuda, Dev:0] GhostCommunicator_partial_blocks::list_send_cells]"
+  Strategy: "simulated annealing"
+  Converged: false
