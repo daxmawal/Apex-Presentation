@@ -266,8 +266,9 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \textcolor{hotspotBlue}{     Kokkos::parallel_for [Cuda, Dev:0] HydroE::Init :    418     0.00     0.29}
 \end{semiverbatim}}
 \end{beamerboxesrounded}
-\vspace{0.2em}
-{\scriptsize \textcolor{hlOrange}{Dyablo timers} exported through regions, plus \textcolor{hotspotBlue}{APEX} counters and CPU timers. In this run, \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{patchBlue}{\texttt{HydroE::Patch}}} is already the dominant kernel inside \texttt{HyperbolicUpdate\_euler}. For the rest of this presentation, we will focus on \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{patchBlue}{\texttt{HydroE::Patch}}}.}
+\vspace{0.1em}
+{\scriptsize \textcolor{hlOrange}{Dyablo timers} are exported as regions, while \textcolor{hotspotBlue}{APEX} adds counters and CPU timers. \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{patchBlue}{\texttt{HydroE::Patch}}} already dominates \texttt{HyperbolicUpdate\_euler}, so the rest of this presentation focuses on it.\\}
+{\tiny Timings shown here use APEX tuning and one fence per kernel (\texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}).}
 \end{frame}
 
 \begin{frame}[fragile,t]{APEX sees Dyablo's timer hierarchy}
@@ -302,11 +303,11 @@ Total                           time (CPU) :   346.719 s (100.00%) , (GPU) :   3
 | other                         time (CPU) :     0.000 s (  0.00%) , (GPU) :     0.000 s (  0.00%)
 \end{semiverbatim}}
 \end{beamerboxesrounded}
-\vspace{0.2em}
-{\scriptsize Dyablo already records this hierarchy in its own timers. APEX sees the same phases because Dyablo exports them through \texttt{Kokkos::Profiling::pushRegion()/popRegion()}.}
-
 \vspace{0.1em}
-{\scriptsize Hotspots are highlighted in \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\textcolor{hlOrange}{orange}}}.}
+{\scriptsize Dyablo already has this hierarchy in its own timers, and APEX sees the same phases through \texttt{Kokkos::Profiling::pushRegion()/popRegion()}.}
+{\scriptsize Hotspots are highlighted in \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\textcolor{hlOrange}{orange}}}.\\}
+{\tiny Timings shown here use APEX tuning and one fence per kernel (\texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}).}
+
 \end{frame}
 
 \begin{frame}[fragile,t]{APEX counters and CPU timers}
@@ -333,9 +334,10 @@ CPU Timers                                           : #calls|   mean |   total
     Kokkos::parallel_for [Cuda, Dev:0] HydroE::Patch :    418     0.19    79.84
 \end{lstlisting}
 \end{beamerboxesrounded}
-
 \vspace{0.1em}
-{\scriptsize \texttt{Counter} reports sampled host/process metrics in this run, while \texttt{CPU Timers} reports the APEX timers.}
+{\scriptsize \texttt{Counter} reports sampled host/process metrics in this run, while \texttt{CPU Timers} reports the APEX timers.\\}
+\vspace{0.1em}
+{\tiny These timings are from a run with APEX tuning and one fence after each kernel (\texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}).}
 \end{frame}
 
 % =========================================================
@@ -842,6 +844,28 @@ HyperbolicUpdate\_euler & 3.863 s & 3.208 s & 1.20x \\
 \begin{itemize}\itemsep0.08em
   \item \texttt{AUTO} means \texttt{HydroE::Patch} is left to plain Kokkos \texttt{AUTO} for \texttt{team\_size} and \texttt{vector\_length}.
   \item The main gain is in \texttt{HyperbolicUpdate\_euler} at about \texttt{1.20x}, giving about \texttt{1.12x} overall, while \texttt{AMR} stays essentially unchanged.
+\end{itemize}}
+\end{frame}
+
+\begin{frame}[t]{Performance comparison on RTX 4000}
+\begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{%
+\texttt{\scriptsize Dyablo timers: no tuning vs APEX tuning on \texttt{HyperbolicUpdate\_euler}}}
+{\scriptsize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Metric & No tuning & APEX tuning & Speedup \\
+\midrule
+HyperbolicUpdate\_euler (CPU) & 52.897 s & 33.457 s & 1.58x \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}}
+\end{beamerboxesrounded}
+
+\vspace{0.1em}
+{\scriptsize
+\begin{itemize}\itemsep0.08em
+  \item Test case: \texttt{RTX 4000}, \texttt{test\_solid\_3d.ini}, with AMR \texttt{level\_min = 3} and \texttt{level\_max = 7}.
 \end{itemize}}
 \end{frame}
 
