@@ -759,7 +759,7 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile,t]{APEX converged yaml cache after the run}
+\begin{frame}[fragile,t]{Example: APEX converged yaml cache after the run}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
@@ -847,16 +847,17 @@ HyperbolicUpdate\_euler & 3.863 s & 3.208 s & 1.20x \\
 \end{itemize}}
 \end{frame}
 
-\begin{frame}[t]{Performance comparison on RTX 4000}
+\begin{frame}[t]{Cross-platform performance comparison}
 \begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{%
-\texttt{\scriptsize Dyablo timers: no tuning vs APEX tuning on \texttt{HyperbolicUpdate\_euler}}}
+\scriptsize Dyablo timers: AUTO vs APEX-guided HydroE::Patch (GPU times)}
 {\scriptsize
 \begin{adjustbox}{max width=\linewidth}
-\begin{tabular}{@{}llll@{}}
+\begin{tabular}{@{}lllll@{}}
 \toprule
-Metric & No tuning & APEX tuning & Speedup \\
+GPU & Backend & AUTO & APEX-guided & Speedup \\
 \midrule
-HyperbolicUpdate\_euler (CPU) & 52.897 s & 33.457 s & 1.58x \\
+RTX 4000 & CUDA & 52.897 s & 33.457 s & 1.58x \\
+MI250X & HIP & TBD & TBD & TBD \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}}
@@ -865,7 +866,7 @@ HyperbolicUpdate\_euler (CPU) & 52.897 s & 33.457 s & 1.58x \\
 \vspace{0.1em}
 {\scriptsize
 \begin{itemize}\itemsep0.08em
-  \item Test case: \texttt{RTX 4000}, \texttt{test\_solid\_3d.ini}, with AMR \texttt{level\_min = 3} and \texttt{level\_max = 7}.
+  \item Same workload on each platform: \texttt{test\_solid\_3d.ini}, with AMR \texttt{level\_min = 3} and \texttt{level\_max = 7}.
 \end{itemize}}
 \end{frame}
 
