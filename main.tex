@@ -452,7 +452,7 @@ Typical Kokkos internal knobs:\\
 \tiny
 \raggedright
 \texttt{window = 5}\\
-update APEX search state after each candidate configuration has been evaluated 5 times
+APEX updates the search after 5 observations of the context
 
 \vspace{0.05em}
 \texttt{Converged = true}\\
@@ -579,12 +579,12 @@ Context_0:
 \vspace{0.18em}
 \begin{columns}[T,onlytextwidth]
 \column{0.35\textwidth}
-\begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{APEX context key}
+\begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Displayed APEX context key}
 \tiny
 \begin{itemize}\itemsep0.18em
     \item \texttt{kernel\_name}
     \item \texttt{kernel\_type}
-    \item current APEX \texttt{tree\_node}
+    \item displayed \texttt{tree\_node} from the current APEX timer hierarchy
 \end{itemize}
 \end{beamerboxesrounded}
 
@@ -811,7 +811,7 @@ HydroE kernel & Context & vector\_length & team\_size \\
 \begin{itemize}\itemsep0.08em
   \item \textbf{Rule:} The yaml stores normalized values. Kokkos converts them with \texttt{index = floor(N * value\_yaml)} and then selects candidate \texttt{index}.
   \item \textbf{vector\_length candidates:} \texttt{[1, 2, 4, 8, 16, 32]}
-  \item \textbf{team\_size candidates:} 
+  \item \textbf{team\_size candidates for HydroE::Patch on this CUDA configuration:} 
   \begin{itemize}\itemsep0.03em
   \item[--] If \texttt{vector\_length = 2}: \texttt{[128, 64, 32, 16, 8, 4, 2, 1]}. 
   \item[--] If \texttt{vector\_length = 4}: \texttt{[64, 32, 16, 8, 4, 2, 1]}.
