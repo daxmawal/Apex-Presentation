@@ -164,7 +164,7 @@
 \begin{frame}[t]{Case study: using APEX on Dyablo}
 \small
 \begin{itemize}\itemsep0.4em
-    \item Dyablo is a Kokkos-based AMR hydrodynamics / MHD application targeting CPU and GPU executions.
+    \item Dyablo is a Kokkos-based AMR hydrodynamics / MHD application for CPU and GPU runs.
     \item APEX is a performance measurement and auto-tuning framework that can plug into Kokkos.
     \item In this presentation, \dyablo{} is used as an example to show:
     \begin{itemize}\itemsep0.2em
@@ -192,13 +192,13 @@ Aggregate timing and counter statistics.
 
 \begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Tuner}
 \small
-Search better Kokkos launch parameters.
+Searches for better Kokkos launch parameters.
 \vspace{0.35em}
 \begin{itemize}\itemsep0.22em
     \item Handles Kokkos tuning requests
     \item Tries candidate configurations online
-    \item Reuses stable configurations and can write them to yaml
-    \item If yaml has no final configuration yet, the next Dyablo run retunes that context
+    \item Reuses stable configurations and can write them to YAML
+    \item If YAML has no final configuration yet, the next Dyablo run retunes that context
 \end{itemize}
 \end{beamerboxesrounded}
 \end{frame}
@@ -268,7 +268,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \end{beamerboxesrounded}
 \vspace{0.1em}
 {\scriptsize \textcolor{hlOrange}{Dyablo timers} are exported as regions, while \textcolor{hotspotBlue}{APEX} adds counters and CPU timers. \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{patchBlue}{\texttt{HydroE::Patch}}} already dominates \texttt{HyperbolicUpdate\_euler}, so the rest of this presentation focuses on it.\\}
-{\tiny Timings shown here use APEX tuning and one fence per kernel (\texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}).}
+{\tiny Timings shown here use APEX \texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}.}
 \end{frame}
 
 \begin{frame}[fragile,t]{APEX sees Dyablo's timer hierarchy}
@@ -306,7 +306,7 @@ Total                           time (CPU) :   346.719 s (100.00%) , (GPU) :   3
 \vspace{0.1em}
 {\scriptsize Dyablo already has this hierarchy in its own timers, and APEX sees the same phases through \texttt{Kokkos::Profiling::pushRegion()/popRegion()}.}
 {\scriptsize Hotspots are highlighted in \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textbf{\textcolor{hlOrange}{orange}}}.\\}
-{\tiny Timings shown here use APEX tuning and one fence per kernel (\texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}).}
+{\tiny Timings shown here use APEX \texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}.}
 
 \end{frame}
 
@@ -335,9 +335,9 @@ CPU Timers                                           : #calls|   mean |   total
 \end{lstlisting}
 \end{beamerboxesrounded}
 \vspace{0.1em}
-{\scriptsize \texttt{Counter} reports sampled host/process metrics in this run, while \texttt{CPU Timers} reports the APEX timers.\\}
+{\scriptsize sampled host/process metrics in this run, while \texttt{CPU Timers} report the APEX timers.\\}
 \vspace{0.1em}
-{\tiny These timings are from a run with APEX tuning and one fence after each kernel (\texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}).}
+{\tiny Timings shown here use APEX \texttt{APEX\_KOKKOS\_PROFILING\_FENCES=1}.}
 \end{frame}
 
 % =========================================================
@@ -405,7 +405,7 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \node[stage, fill=ceaGreen!12, draw=ceaGreen] (ap1) at (7.1,0.2)
   {\textbf{2. Request}\\context and tunable variables sent to APEX};
 \node[stage, fill=orange!15, draw=orange!80!black] (ap2) at (7.1,-1.6)
-  {\textbf{3. Cache/Candidate}\\reuse cached yaml tuning when available, or choose a candidate};
+  {\textbf{3. Cache/Candidate}\\reuse cached YAML tuning when available, or choose a candidate};
 \node[stage, fill=red!8, draw=red!70!black] (dy2) at (1.85,-1.6)
   {\textbf{4. Kernel Runs}\\one execution with the chosen parameters};
 \node[stage, fill=black!4, draw=black!60] (ap3) at (7.1,-3.3)
@@ -413,22 +413,22 @@ $ KOKKOS_TOOLS_LIBS=../apex/install/lib/libapex.so \
 \node[stage, fill=hotspotBlue!12, draw=hotspotBlue!80!black] (dy3) at (1.85,-4.7)
   {\textbf{6. Later Visit}\\same execution context hit again later in the run};
 \node[decision] (conv) at (6.00,-4.9) {Converged?};
-\node[cachebox] (yaml) at (8.4,-4.9)
-  {\textbf{yaml cache}\\write stable tuning};
+\node[cachebox] (YAML) at (8.4,-4.9)
+  {\textbf{YAML cache}\\write stable tuning};
 
 \draw[arr] (dy1.east) -- (ap1.west);
 \draw[arr] (ap1) -- (ap2);
 \draw[arr] (ap2.west) -- (dy2.east);
 \draw[arr] (dy2.east) -- (ap3.west);
 \draw[arr] (ap3.south) -- (conv.north);
-\draw[arr] (conv.east) -- node[above,font=\tiny] {YES} (yaml.west);
+\draw[arr] (conv.east) -- node[above,font=\tiny] {YES} (YAML.west);
 \draw[looparr] (conv.west) to[bend right=16] node[below,font=\tiny,text width=1.9cm,xshift=-0cm,yshift=0.45cm]
   {NO, revisit later} (dy3.east);
 \end{tikzpicture}
 \end{adjustbox}
 
 \vspace{0.05em}
-{\tiny\color{black!75}\textbf{Convergence:} once the selected APEX tuning strategy declares a context converged, APEX stops exploring new configurations for that context, reapplies the best configuration, and persists it to the tuning cache/yaml.}
+{\tiny\color{black!75}\textbf{Convergence:} once the selected APEX tuning strategy declares a context converged, APEX stops exploring new configurations for that context, reapplies the best configuration, and persists it to the tuning cache/YAML.}
 
 \column{0.35\textwidth}
 \begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{Context}
@@ -458,11 +458,11 @@ APEX updates the search after 5 observations of the context
 
 \vspace{0.05em}
 \texttt{Converged = true}\\
-reuse later in the run and from yaml in later runs
+reuse later in the run and from YAML in later runs
 
 \vspace{0.05em}
 \texttt{Converged = false}\\
-do not reuse from yaml, a later run retunes that context
+do not reuse from YAML, a later run retunes that context
 \end{beamerboxesrounded}
 \end{columns}
 \end{frame}
@@ -540,12 +540,12 @@ Kokkos::parallel_for((*@{\color{apexTuneOrange}\ttfamily\tiny \detokenize{"Hydro
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile,t]{APEX yaml cache after the run}
+\begin{frame}[fragile,t]{APEX YAML cache after the run}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize apex\_converged\_tuning.0.yaml excerpt}}
+\texttt{\scriptsize apex\_converged\_tuning.0.YAML excerpt}}
 {\ttfamily\tiny\color{termText}
 \begin{semiverbatim}
 Output_10:
@@ -570,7 +570,7 @@ Context_0:
     \item Both outputs use the same \textcolor{hotspotBlue}{\texttt{[lower: 0, upper: 0.999, step: 0.04995]}} declaration because APEX stores normalized search coordinates, not final Kokkos values.
     \item \texttt{Context\_0} is the \texttt{HydroE::Patch} tuning context associated with these two knobs.
     \item The cache is still incomplete for this kernel: \textcolor{hlOrange}{\texttt{Converged: false}}.
-    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{Because there is no convergence, the next Dyablo run cannot reload one final winning configuration for \texttt{HydroE::Patch} from this yaml, APEX will tune this context again.}}}
+    \item \textpdfrender{TextRenderingMode=FillStroke,LineWidth=0.18pt}{\textcolor{red!80!black}{\textbf{Because there is no convergence, the next Dyablo run cannot reload one final winning configuration for \texttt{HydroE::Patch} from this YAML, so APEX will tune this context again.}}}
 \end{itemize}
 \end{frame}
 
@@ -604,9 +604,9 @@ Context_0:
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{What this means in Dyablo}
 \tiny
 \begin{itemize}\itemsep0.2em
-    \item Two calls to \texttt{HydroE::Patch} with different \texttt{number of octants} still hit the same APEX context.
+    \item Two calls to \texttt{HydroE::Patch} with different \texttt{numbers of octants} still hit the same APEX context.
     \item Best \textcolor{green!70!black}{\texttt{team\_size}} and \textcolor{green!70!black}{\texttt{vector\_length}} can change with size, backend, GPU, and workload.
-    \item One yaml entry can therefore mix several regimes and end up as a compromise.
+    \item One YAML entry can therefore mix several regimes and end up as a compromise.
     \item If one run stops with \texttt{Converged: false}, the next run does not resume that unfinished search, it starts tuning that context again and may revisit similar candidates.
     \item With short runs, this context may keep getting retuned without ever settling on one stable setting.
 \end{itemize}
@@ -713,7 +713,7 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 {\tiny Branch: \href{https://github.com/daxmawal/Dyablo-apex/tree/intrusive_apex_hydroe_patch}{\texttt{daxmawal/Dyablo-apex}, \texttt{intrusive\_apex\_hydroe\_patch}}.}
 \end{frame}
 
-\begin{frame}[fragile,t]{APEX converged tuning trace}
+\begin{frame}[fragile,t]{Example: APEX converged tuning trace}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
@@ -755,16 +755,16 @@ if (Kokkos::Tools::Experimental::have_tuning_tool()) {
 \scriptsize
 \begin{itemize}\itemsep0.06em
     \item For the \texttt{HydroE::Patch\_octs\_3k\_4k5} bucket, the trace starts with a first best at \texttt{\textcolor{red!80!black}{0.032065s}} per call and converges to a best measured candidate at \texttt{\textcolor{red!80!black}{0.00449144s}}.
-    \item The winning normalized coordinates for this context are \texttt{team\_size = 0.34965} and \texttt{vector\_length = 0.4995}, after repeated reuse of that pair, APEX declares convergence.
+    \item The winning normalized coordinates for this context are \texttt{team\_size = 0.34965} and \texttt{vector\_length = 0.4995}. After repeated reuse of that pair, APEX declares convergence.
 \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile,t]{Example: APEX converged yaml cache after the run}
+\begin{frame}[fragile,t]{Example: APEX converged YAML cache after the run}
 \begin{beamerboxesrounded}[upper=terminal title,lower=terminal body,width=\linewidth,shadow=false]{%
 \textcolor{red!70}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{yellow!80}{\footnotesize\textbullet}\hspace{0.15em}%
 \textcolor{green!70!black}{\footnotesize\textbullet}\hspace{0.55em}%
-\texttt{\scriptsize apex\_converged\_tuning.0.yaml excerpt for HydroE::Patch\_octs\_3k\_4k5}}
+\texttt{\scriptsize apex\_converged\_tuning.0.YAML excerpt for HydroE::Patch\_octs\_3k\_4k5}}
 {\ttfamily\tiny\color{termText}
 \begin{semiverbatim}
 Output_14:
@@ -789,9 +789,9 @@ Context_2:
 \end{beamerboxesrounded}
 \end{frame}
 
-\begin{frame}[t]{APEX converged yaml cache after the run}
+\begin{frame}[t]{Summary of the APEX converged YAML cache}
 \begin{beamerboxesrounded}[upper=tuner title,lower=tuner body,width=\linewidth,shadow=false]{%
-\texttt{\scriptsize HydroE results from apex\_converged\_tuning.0.yaml}}
+\texttt{\scriptsize HydroE results from apex\_converged\_tuning.0.YAML}}
 {\scriptsize\color{black}
 \begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{@{}llll@{}}
@@ -811,7 +811,7 @@ HydroE kernel & Context & vector\_length & team\_size \\
 \vspace{0.08em}
 {\scriptsize
 \begin{itemize}\itemsep0.08em
-  \item \textbf{Rule:} The yaml stores normalized values. Kokkos converts them with \texttt{index = floor(N * value\_yaml)} and then selects candidate \texttt{index}.
+  \item \textbf{Rule:} The YAML stores normalized values. Kokkos converts them with \texttt{index = floor(N * value\_YAML)} and then selects candidate \texttt{index}.
   \item \textbf{vector\_length candidates:} \texttt{[1, 2, 4, 8, 16, 32]}
   \item \textbf{team\_size candidates for HydroE::Patch on this CUDA configuration:} 
   \begin{itemize}\itemsep0.03em
@@ -819,54 +819,32 @@ HydroE kernel & Context & vector\_length & team\_size \\
   \item[--] If \texttt{vector\_length = 4}: \texttt{[64, 32, 16, 8, 4, 2, 1]}.
   \end{itemize}
   \item \textbf{Example:} \texttt{0.4995 -> 4}, then \texttt{0.34965 -> 16}. Different normalized values can still map to the same final \texttt{team\_size}.
-\end{itemize}}
+\end{itemize}
+{\tiny Parameters depend on the selected Kokkos backend.}}
 \end{frame}
 
-\begin{frame}[t]{Performance comparison}
+\begin{frame}[t,shrink=5]{Performance comparison}
 \begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{%
-\texttt{\scriptsize Dyablo timers: AUTO vs APEX-guided HydroE::Patch (GPU times)}}
+\texttt{\scriptsize RTX 4000: HyperbolicUpdate\_euler across AMR depths}}
 {\scriptsize
 \begin{adjustbox}{max width=\linewidth}
 \begin{tabular}{@{}llll@{}}
 \toprule
-Metric & AUTO & APEX-guided & Speedup \\
+AMR max & AUTO & APEX-guided & Speedup \\
 \midrule
-Total & 6.444 s & 5.759 s & 1.12x \\
-AMR & 2.088 s & 2.099 s & 0.99x \\
-HyperbolicUpdate\_euler & 3.863 s & 3.208 s & 1.20x \\
+6 & 3.863 s & 3.208 s & 1.20x \\
+7 & 52.897 s & 33.457 s & 1.58x \\
+8 & 452.174 s & 284.017 s & 1.59x \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}}
 \end{beamerboxesrounded}
 
-\vspace{0.1em}
+\vspace{0.15em}
 {\scriptsize
 \begin{itemize}\itemsep0.08em
   \item \texttt{AUTO} means \texttt{HydroE::Patch} is left to plain Kokkos \texttt{AUTO} for \texttt{team\_size} and \texttt{vector\_length}.
-  \item The main gain is in \texttt{HyperbolicUpdate\_euler} at about \texttt{1.20x}, giving about \texttt{1.12x} overall, while \texttt{AMR} stays essentially unchanged.
-\end{itemize}}
-\end{frame}
-
-\begin{frame}[t]{Cross-platform performance comparison}
-\begin{beamerboxesrounded}[upper=profiler title,lower=profiler body,width=\linewidth,shadow=false]{%
-\scriptsize Dyablo timers: AUTO vs APEX-guided HydroE::Patch (GPU times)}
-{\scriptsize
-\begin{adjustbox}{max width=\linewidth}
-\begin{tabular}{@{}lllll@{}}
-\toprule
-GPU & Backend & AUTO & APEX-guided & Speedup \\
-\midrule
-RTX 4000 & CUDA & 52.897 s & 33.457 s & 1.58x \\
-MI250X & HIP & TBD & TBD & TBD \\
-\bottomrule
-\end{tabular}
-\end{adjustbox}}
-\end{beamerboxesrounded}
-
-\vspace{0.1em}
-{\scriptsize
-\begin{itemize}\itemsep0.08em
-  \item Same workload on each platform: \texttt{test\_solid\_3d.ini}, with AMR \texttt{level\_min = 3} and \texttt{level\_max = 7}.
+  \item Input file: \texttt{test\_sod\_3d.ini}, with AMR \texttt{level\_min = 3}.
 \end{itemize}}
 \end{frame}
 
@@ -875,6 +853,13 @@ MI250X & HIP & TBD & TBD & TBD \\
 % =========================================================
 
 \begin{frame}[t]{Conclusion}
+\small
+\begin{itemize}\itemsep0.35em
+  \item For \texttt{HydroE::Patch}, launch-parameter tuning matters, but one coarse APEX context mixes different \texttt{nbOcts} regimes and weakens the search.
+  \item Splitting the kernel into narrower workload buckets makes convergence possible and produces reusable YAML entries.
+  \item On RTX 4000 / CUDA, the APEX-guided configuration speeds up \texttt{HyperbolicUpdate\_euler} by up to 1.59×.
+  \item Tuned parameters depend on the selected Kokkos backend, so tuning caches should be built and reused per backend / platform.
+\end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
